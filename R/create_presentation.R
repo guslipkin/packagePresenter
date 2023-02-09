@@ -12,7 +12,7 @@ create_presentation <- function(package, file) {
 
   # paste0(r_files, "/", package_functions) |>
     # lapply(\(f) {
-      f <- paste0(r_files, "/", package_functions)[2]
+      f <- paste0(r_files, "/", package_functions)[1]
       f <- roxygen2::parse_file(f)
       function_details <- .get_tags(f[[1]])
 
@@ -52,7 +52,7 @@ create_presentation <- function(package, file) {
 }
 
 .get_tags <- function(block) {
-  description <- roxygen2::block_get_tags(f[[1]], "description")[[1]]$raw
+  description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
