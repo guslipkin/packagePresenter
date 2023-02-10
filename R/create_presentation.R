@@ -1,4 +1,14 @@
-create_presentation <- function(package, file) {
+create_presentation <- function(package, file = "") {
+
+  # if I do package = getwd() in the arguments or the below chunk then I get
+  #   a recursive loop when I try to assign file in the live block below
+  # if (is.null(package)) {
+  #   package <- getwd()
+  # }
+  if (file == "") {
+    package_name <- rev(strsplit(package, '/')[[1]])[1]
+    file <- package_name
+  }
 
   if (grepl("\\.qmd", file)) {
     file.create(file)
@@ -16,11 +26,18 @@ create_presentation <- function(package, file) {
       f <- roxygen2::parse_file(f)
       function_details <- .get_tags(f[[1]])
 
-      function_header <- glue::glue("# `{f[[1]]$object$alias}.R`")
-      description <- function_details$description
+      function_details$title <- glue::glue("\n\n# {function_details$title}")
 
-      param_header <- "## Parameters"
-      param <- .process_params(function_details$param)
+      function_details$description <- glue::glue("- Description: {function_details$description}")
+
+      function_details$returns <- glue::glue("- Returns: {function_details$returns}")
+
+      param_header <- "\n\n## Parameters"
+      function_details$param <- .process_params(function_details$param)
+
+      function_file_header <- glue::glue("\n\n## `{rev(strsplit(f[[1]]$file, '/')[[1]])[1]}`")
+      function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
+
 
 
     # }) |>
@@ -28,7 +45,7 @@ create_presentation <- function(package, file) {
 
   file_header <- c(
     "---",
-    glue::glue("title: {rev(strsplit(package, '/')[[1]])[1]}"),
+    glue::glue("title: {package_name}"),
     "format:",
     "  revealjs:",
     "    navigation-mode: vertical",
@@ -37,10 +54,13 @@ create_presentation <- function(package, file) {
 
   file_contents <- c(
     file_header,
-    function_header,
-    description,
+    function_details$title,
+    function_details$description,
+    function_details$returns,
     param_header,
-    param
+    function_details$param,
+    function_file_header,
+    function_details$code
   )
 
   fileConn <- file(file)
@@ -52,7 +72,9 @@ create_presentation <- function(package, file) {
 }
 
 .get_tags <- function(block) {
+  title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
   description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
+  returns <- roxygen2::block_get_tags(block, "returns")[[1]]$raw
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
@@ -64,9 +86,14 @@ create_presentation <- function(package, file) {
       )
     })
 
+  code <- rlang::expr_text(block$call)
+
   list(
+    "title" = title,
     "description" = description,
-    "param" = param
+    "returns" = returns,
+    "param" = param,
+    "code" = code
   )
 }
 
@@ -79,7 +106,4 @@ create_presentation <- function(package, file) {
 
 # package <- "/Users/guslipkin/Documents/GitHub/cipheR"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
-# create_presentation(package, file)
-
-
-
+# create_presentation(package)
