@@ -20,9 +20,10 @@ create_presentation <- function(package, file = "") {
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
 
-  # paste0(r_files, "/", package_functions) |>
-    # lapply(\(f) {
-      f <- paste0(r_files, "/", package_functions)[1]
+  function_contents <-
+    paste0(r_files, "/", package_functions) |>
+    lapply(\(f) {
+      # f <- paste0(r_files, "/", package_functions)[1]
       f <- roxygen2::parse_file(f)
       function_details <- .get_tags(f[[1]])
 
@@ -38,9 +39,19 @@ create_presentation <- function(package, file = "") {
       function_file_header <- glue::glue("\n\n## `{rev(strsplit(f[[1]]$file, '/')[[1]])[1]}`")
       function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
 
+      function_contents <- c(
+        function_details$title,
+        function_details$description,
+        function_details$returns,
+        param_header,
+        function_details$param,
+        function_file_header,
+        function_details$code
+      )
 
-
-    # }) |>
+      return(function_contents)
+    }) |>
+    unlist()
     # print()
 
   file_header <- c(
@@ -54,13 +65,7 @@ create_presentation <- function(package, file = "") {
 
   file_contents <- c(
     file_header,
-    function_details$title,
-    function_details$description,
-    function_details$returns,
-    param_header,
-    function_details$param,
-    function_file_header,
-    function_details$code
+    function_contents
   )
 
   fileConn <- file(file)
