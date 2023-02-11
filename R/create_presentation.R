@@ -10,7 +10,7 @@ create_presentation <- function(package, file = "") {
     file <- package_name
   }
 
-  if (grepl("\\.qmd", file)) {
+  if (grepl("\\.qmd$", file)) {
     file.create(file)
   } else {
     file <- paste0(file, ".qmd")
@@ -36,6 +36,9 @@ create_presentation <- function(package, file = "") {
       param_header <- "\n\n## Parameters"
       function_details$param <- .process_params(function_details$param)
 
+      examples_header <- "\n\n## Examples"
+      function_details$examples <- glue::glue("```{r}\n#| echo: true{{function_details$examples}\n```", .open = "{{")
+
       function_file_header <- glue::glue("\n\n## `{rev(strsplit(f[[1]]$file, '/')[[1]])[1]}`")
       function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
 
@@ -45,6 +48,8 @@ create_presentation <- function(package, file = "") {
         function_details$returns,
         param_header,
         function_details$param,
+        examples_header,
+        function_details$examples,
         function_file_header,
         function_details$code
       )
@@ -80,6 +85,7 @@ create_presentation <- function(package, file = "") {
   title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
   description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
   returns <- roxygen2::block_get_tags(block, "returns")[[1]]$raw
+  examples <- roxygen2::block_get_tags(block, "examples")[[1]]$raw
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
@@ -98,6 +104,7 @@ create_presentation <- function(package, file = "") {
     "description" = description,
     "returns" = returns,
     "param" = param,
+    "examples" = examples,
     "code" = code
   )
 }
@@ -109,6 +116,6 @@ create_presentation <- function(package, file = "") {
     paste0(collapse = "\n")
 }
 
-# package <- "/Users/guslipkin/Documents/GitHub/cipheR"
+package <- "/Users/guslipkin/Documents/GitHub/cipheR"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
-# create_presentation(package)
+create_presentation(package)
