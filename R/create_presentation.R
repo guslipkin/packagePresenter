@@ -1,5 +1,12 @@
 #' Title
 #'
+#' @description When pointed at the root directory of an R Package Project, this
+#'   function will automatically generate and render a Quarto/Revealjs
+#'   presentation for that package. It will have a title slide and description
+#'   slide generated from the package's DESCRIPTION file and each exported
+#'   function will have slides with its description and returns, parameters,
+#'   examples, and source code.
+#'
 #' @param package A file path to the root directory of an R package source
 #'   folder.
 #' @param file The file name for your .qmd file. This can be a path so long as

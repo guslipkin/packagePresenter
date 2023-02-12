@@ -2,7 +2,7 @@
 #'
 #' @param file A file path
 #'
-#' @inherit .collate_functions return
+#' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
 .get_functions <- function(file) {
   # file <- paste0(r_files, "/", package_functions)[1]
@@ -25,8 +25,10 @@
   file <- rev(strsplit(block$file, '/')[[1]])[1]
   title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
   description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
-  returns <- roxygen2::block_get_tags(block, "returns")[[1]]$raw
+  # description <- "\n'test'"
+  return <- roxygen2::block_get_tags(block, c("return", "returns"))[[1]]$raw
   examples <- roxygen2::block_get_tags(block, "examples")[[1]]$raw
+  # examples <- "\n'test'"
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
@@ -44,7 +46,7 @@
     "file" = file,
     "title" = title,
     "description" = description,
-    "returns" = returns,
+    "returns" = return,
     "param" = param,
     "examples" = examples,
     "code" = code
@@ -60,9 +62,9 @@
 .collate_functions <- function(function_details) {
   function_details$title <- glue::glue("\n\n# {function_details$title}")
 
-  function_details$description <- glue::glue("- Description: {function_details$description}")
+  function_details$description <- glue::glue("- **Description**: {function_details$description}")
 
-  function_details$returns <- glue::glue("- Returns: {function_details$returns}")
+  function_details$return <- glue::glue("- **Return**: {function_details$return}")
 
   param_header <- "\n\n## Parameters"
   function_details$param <- .process_params(function_details$param)
@@ -76,7 +78,7 @@
   function_contents <- c(
     function_details$title,
     function_details$description,
-    function_details$returns,
+    function_details$return,
     param_header,
     function_details$param,
     examples_header,
