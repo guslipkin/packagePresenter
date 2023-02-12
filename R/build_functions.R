@@ -1,3 +1,9 @@
+#' Title
+#'
+#' @param file A file path
+#'
+#' @inherit .collate_functions return
+#' @keywords internal
 .get_functions <- function(file) {
   # file <- paste0(r_files, "/", package_functions)[1]
   f <- roxygen2::parse_file(file)
@@ -9,6 +15,12 @@
   return(function_contents)
 }
 
+#' Title
+#'
+#' @param block A roxygen2 block
+#'
+#' @return A list of roxygen2 properties for a specific source file
+#' @keywords internal
 .get_tags <- function(block) {
   file <- rev(strsplit(block$file, '/')[[1]])[1]
   title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
@@ -39,6 +51,12 @@
   )
 }
 
+#' Title
+#'
+#' @param function_details A list of function details from `.get_tags`
+#'
+#' @return A character vector of properties formatted for writing to a file
+#' @keywords internal
 .collate_functions <- function(function_details) {
   function_details$title <- glue::glue("\n\n# {function_details$title}")
 
@@ -70,6 +88,13 @@
   return(function_contents)
 }
 
+#' Title
+#'
+#' @param param A function parameter from an roxygen2 tag
+#'
+#' @return A length-one character vector of parameters formatted as a bulleted
+#'   list for writing to a file
+#' @keywords internal
 .process_params <- function(param) {
   sapply(param, \(p) {
     glue::glue("- `{p$name}`: {p$param_description}")

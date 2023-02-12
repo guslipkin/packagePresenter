@@ -1,0 +1,399 @@
+---
+title: cipheR
+subtitle: 1.0.0
+format:
+  revealjs:
+    navigation-mode: vertical
+    self-contained: true
+---
+
+## Encryption and Decryption with Text Ciphers
+Encrypts and decrypts using basic ciphers. None of 
+  these should be used in place of real encryption using state of the art tools. 
+  The ciphers included use methods described in the ciphers's Wikipedia and 
+  cryptography hobby websites.
+
+```{r}
+#| echo: false
+library(cipheR)
+```
+
+# Encrypt or decrypt an Atbash Cipher
+- Description: This can be used to create (encrypt) and solve (decrypt) an
+  Atbash Cipher. An Atbash Cipher swaps letters' places in the alphabet.
+  Thus, 'a' becomes 'z', 'b' becomes 'y', and so on. The function does not
+  differentiate between the two.
+
+  The Atbash Cipher Wikipedia entry provides more information on the methods
+  used: [https://en.wikipedia.org/wiki/Atbash](https://en.wikipedia.org/wiki/Atbash)
+
+- Returns: A character vector of length one that has been transformed
+
+
+## Parameters
+- `x`: A vector to be encoded or decoded.
+
+
+## Examples
+```{r}
+#| echo: true
+(e1 <- atbash("abcde"))
+atbash(e1)
+
+(e2 <- atbash("cipheR is a great R package!"))
+atbash(e2)
+
+(e3 <- atbash("Isn't this fun?"))
+atbash(e3)
+```
+
+## `atbash.R`
+```{.r}
+atbash <- function(x) {
+    if (length(x) == 0) {
+        stop("Please provide a vector of length greater than zero.")
+    }
+    else if (!is.atomic(x) & !is.character(x)) {
+        stop("x must be a character vector.")
+    }
+    x <- strsplit(x, "")
+    x <- lapply(x, function(y) {
+        y <- sapply(y, function(z) {
+            if (z %in% c(letters, LETTERS)) {
+                if (grepl("[A-Z]", z)) {
+                  z <- LETTERS[27 - which(LETTERS == z)]
+                }
+                else {
+                  z <- letters[27 - which(letters == z)]
+                }
+            }
+            return(z)
+        })
+        y <- paste0(y, collapse = "")
+        return(y)
+    })
+    x <- unlist(x, recursive = FALSE)
+    return(x)
+}
+```
+
+# Encrypt or decrypt a Caesar Cipher
+- Description: This can be used to create (encrypt) and solve (decrypt) a
+  Caesar cipher. The function does not differentiate between the two.
+
+  The Caesar Cipher Wikipedia entry provides more information on the methods
+  used: [https://en.wikipedia.org/wiki/Caesar_cipher](https://en.wikipedia.org/wiki/Caesar_cipher)
+
+- Returns: A character vector of length one that has been shifted.
+
+
+## Parameters
+- `x`: A vector to be shifted
+- `n`: (Default: `1`) The number of places to shift by. This can be either
+positive or negative. Zero returns x as it was given to the function.
+- `preserve_spaces`: (Default: `TRUE`) A boolean describing if spaces should
+be preserved. This is helpful when working with sentences.
+- `dict`: The dictionary used for shifting. This defaults to NULL in which
+case a dictionary is built from the sorted unique values of x.
+- `preset`: A pre-made dictionary using ASCII codes from
+\url{https://www.ascii-code.com/}. Note that `delete` is excluded as a
+character.
+* `NULL` (the default)
+* `"alphanumeric"`: ASCII characters 48:57, 65:90, and 97:122. Numbers 0-9
+and both uppercase and lowercase letters from the English alphabet.
+* `"keyboard"`: ASCII characters 32:126. The characters you'll find on a
+US English keyboard.
+* `"letters"`: ASCII characters 65:90 and 97:122. Both uppercase and
+lowercase letters from the English alphabet.
+* `"lowercase"`: ASCII characters 97:122. Lowercase letters from the
+English alphabet.
+* `"uppercase"`: ASCII characters 65:90. Uppercase letters from the
+English alphabet.
+
+
+## Examples
+```{r}
+#| echo: true
+(e1 <- caesar("abcde", 1))
+caesar(e1, -1)
+
+(e2 <- caesar("cipheR is a great R package!", -5))
+caesar(e2, 5)
+
+(e3 <- caesar("Isn't this fun?", 2, preserve_spaces = FALSE))
+caesar(e3, -2, preserve_spaces = FALSE)
+```
+
+## `caesar.R`
+```{.r}
+caesar <- function(x, n = 1, preserve_spaces = TRUE, dict = NULL, 
+    preset = NULL) {
+    if (length(x) == 0) {
+        stop("Please provide a vector of length greater than zero to shift.")
+    }
+    else if (!is.atomic(x) | !(is.character(x) | is.numeric(x))) {
+        stop("x must be a numeric or character vector.")
+    }
+    if (!is.null(dict) & !is.null(preset)) {
+        warning("Both a dict and a preset was provided, only the dict will be used.")
+    }
+    if (n == 0) {
+        message("Shifting by zero doesn't do anything...")
+        return(x)
+    }
+    if (!is.character(x)) {
+        x <- as.character(x)
+    }
+    x <- strsplit(x, "")
+    unlistX <- unlist(x)
+    if (is.null(dict) & is.null(preset)) {
+        dict <- sort(unique(unlistX))
+    }
+    else if (!is.null(preset)) {
+        if (preset == "alphanumeric") {
+            dict <- rawToChar(as.raw(c(48:57, 65:90, 97:122)))
+        }
+        else if (preset == "keyboard") {
+            dict <- rawToChar(as.raw(32:126))
+        }
+        else if (preset == "letters") {
+            dict <- rawToChar(as.raw(c(65:90, 97:122)))
+        }
+        else if (preset == "lowercase") {
+            dict <- rawToChar(as.raw(c(97:122)))
+        }
+        else if (preset == "uppercase") {
+            dict <- rawToChar(as.raw(c(65:90)))
+        }
+        else {
+            stop("It looks like you may have a typo in your presets. You can double-check the presets by running ?caesar in your console.")
+        }
+    }
+    if (length(dict) == 1) {
+        dict <- unlist(strsplit(dict, ""))
+    }
+    if (!all(unlistX %in% dict)) {
+        stop("Not all values of x are in the character set. Please choose a different character set.")
+    }
+    x <- lapply(x, function(y) {
+        if (preserve_spaces) {
+            isSpace <- which(dict == " ")
+            if (length(isSpace > 0)) {
+                dict <- dict[-which(dict == " ")]
+            }
+        }
+        y <- sapply(y, function(z) {
+            if (preserve_spaces & z == " ") {
+                return(" ")
+            }
+            hop <- which(z == dict) + n
+            hop <- hop%%length(dict)
+            if (hop == 0) {
+                hop <- length(dict)
+            }
+            return(dict[hop])
+        })
+        y <- paste0(y, collapse = "")
+        return(y)
+    })
+    x <- unlist(x, recursive = FALSE)
+    return(x)
+}
+```
+
+# Encrypt or decrypt a Railfence Cipher
+- Description: This can be used to create (encrypt) and solve (decrypt) a
+  Railfence Cipher. A Railfence Cipher maps each letter to a cosine wave of
+  the specified height where each letter resides at an integer rail height.
+
+  The Railfence Cipher Wikipedia entry provides more information on the methods
+  used: [https://en.wikipedia.org/wiki/Rail_fence_cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)
+
+- Returns: A character vector of length one that has been transformed
+
+
+## Parameters
+- `x`: A vector to be encoded or decoded.
+- `n`: (Default: `1`) The width of the rail to be used. A width of one will
+have no effect.
+- `decrypt`: (Default: `FALSE`) The default `FALSE` will encrypt while
+using `TRUE` will decrypt a given value of `x`.
+
+
+## Examples
+```{r}
+#| echo: true
+(e1 <- railfence("abcde", 2))
+railfence(e1, 2, decrypt = TRUE)
+
+(e2 <- railfence("cipheR is a great R package!", 4))
+railfence(e2, 4, decrypt = TRUE)
+
+(e3 <- railfence("Isn't this fun?", 3))
+railfence(e3, 3, decrypt = TRUE)
+```
+
+## `railfence.R`
+```{.r}
+railfence <- function(x, n = 1, decrypt = FALSE) {
+    if (length(x) == 0) {
+        stop("Please provide a vector of length greater than zero")
+    }
+    else if (!is.atomic(x) & !is.character(x)) {
+        stop("x must be a character vector.")
+    }
+    if (length(n) != 1 || n < 1 || n%%1 != 0) {
+        stop("n must be a single integer greater than or equal to 1")
+    }
+    if (!is.logical(decrypt)) {
+        stop("decrypt must be logical")
+    }
+    if (!decrypt) {
+        x <- .railfence_encrypt(x, n)
+    }
+    else {
+        x <- .railfence_decrypt(x, n)
+    }
+    return(x)
+}
+```
+
+# Encrypt or decrypt a Running Key Vigenere Cipher
+- Description: This can be used to create (encrypt) and solve (decrypt) a
+  Running Key Vigenere Cipher. A Vigenere cipher uses a table of alphabetic
+  Caesar shifts for one to twenty-six. The key is made to have an equal
+  length to the text by adding the first letters of the text to the key. Each
+  letter and corresponding key value determine the grid location to choose
+  the obfuscated letter from.
+
+  The Running Key Cipher Wikipedia entry provides more information on the
+  methods used: [https://en.wikipedia.org/wiki/Running_key_cipher](https://en.wikipedia.org/wiki/Running_key_cipher)
+
+- Returns: A character vector of length equal to x that has been transformed
+
+
+## Parameters
+- `x`: A vector to be encoded or decoded.
+- `key`: A character vector of length one to use as a key
+- `decrypt`: (Default: `FALSE`) The default `FALSE` will encrypt while
+using `TRUE` will decrypt a given value of `x`.
+- `keep_punctuation`: (Default: `FALSE`) The default `FALSE` will ignore
+case and punctuation and return a lowercase result. `TRUE` will match the
+input's case and punctuation.
+
+
+## Examples
+```{r}
+#| echo: true
+key <- "thisismysupersecurekey"
+(e1 <- running_key("abcde", key))
+running_key(e1, key, decrypt = TRUE)
+
+(e2 <- running_key("cipheR is a great R package!", key))
+running_key(e2, key, decrypt = TRUE)
+
+(e3 <- running_key("Isn't this fun?", key, keep_punctuation = TRUE))
+running_key(e3, key, decrypt = TRUE, keep_punctuation = TRUE)
+```
+
+## `running_key.R`
+```{.r}
+running_key <- function(x, key, decrypt = FALSE, keep_punctuation = FALSE) {
+    if (length(x) != 1) {
+        stop("Please provide a vector of length one for x")
+    }
+    else if (!is.atomic(x) & !is.character(x) & !is.matrix(x)) {
+        stop("x must be a character vector.")
+    }
+    if (length(key) != 1) {
+        stop("Please provide a vector of length one for key")
+    }
+    else if (!is.character(key) & (is.matrix(key) | !is.atomic(key))) {
+        stop("key must be a character vector.")
+    }
+    y <- unlist(strsplit(x, ""))
+    y <- y[grepl("[A-z]", y)]
+    k <- unlist(strsplit(key, ""))
+    k <- k[grepl("[A-z]", k)]
+    if (length(k) >= length(y)) {
+        x <- vigenere(x, paste0(k, collapse = ""), decrypt = decrypt, 
+            keep_punctuation = keep_punctuation)
+        return(x)
+    }
+    else {
+        stop(paste("The key must have an equal or greater number of letters to the text. The key has", 
+            length(k), "characters and the message has", length(y), 
+            "characters."))
+    }
+}
+```
+
+# Encrypt or decrypt a Vigenere Cipher
+- Description: This can be used to create (encrypt) and solve (decrypt) a
+  Vigenere Cipher. A Vigenere cipher uses a table of alphabetic Caesar shifts
+  for one to twenty-six. Each letter and corresponding key value determine
+  the grid location to choose the obfuscated letter from.
+
+  The Vigenere Cipher Wikipedia entry provides more information on the methods
+  used: [https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher](https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher)
+
+- Returns: A character vector of length equal to x that has been transformed
+
+
+## Parameters
+- `x`: A vector to be encoded or decoded.
+- `key`: A character vector of length one to use as a key
+- `decrypt`: (Default: `FALSE`) The default `FALSE` will encrypt while
+using `TRUE` will decrypt a given value of `x`.
+- `keep_punctuation`: (Default: `FALSE`) The default `FALSE` will ignore
+case and punctuation and return a lowercase result. `TRUE` will match the
+input's case and punctuation.
+
+
+## Examples
+```{r}
+#| echo: true
+(e1 <- vigenere("abcde", "key"))
+vigenere(e1, "key", decrypt = TRUE)
+
+(e2 <- vigenere("cipheR is a great R package!", "key"))
+vigenere(e2, "key", decrypt = TRUE)
+
+(e3 <- vigenere("Isn't this fun?", "key", keep_punctuation = TRUE))
+vigenere(e3, "key", decrypt = TRUE, keep_punctuation = TRUE)
+```
+
+## `vigenere.R`
+```{.r}
+vigenere <- function(x, key, decrypt = FALSE, keep_punctuation = FALSE) {
+    if (length(x) == 0) {
+        stop("Please provide a vector of length greater than zero for x")
+    }
+    else if (!is.atomic(x) & !is.character(x) & !is.matrix(x)) {
+        stop("x must be a character vector.")
+    }
+    if (length(key) != 1) {
+        stop("Please provide a vector of length one for key")
+    }
+    else if (!is.character(key) & (is.matrix(key) | !is.atomic(key))) {
+        stop("key must be a character vector.")
+    }
+    if (!is.logical(decrypt)) {
+        stop("decrypt must be logical")
+    }
+    if (!is.logical(keep_punctuation)) {
+        stop("decrypt must be logical")
+    }
+    square <- suppressMessages(matrix(sapply(0:25, function(x) {
+        caesar(letters, x)
+    }), 26, 26))
+    key <- tolower(key)
+    if (!decrypt) {
+        x <- .vigenere_encrypt(x, key, square, keep_punctuation)
+    }
+    else {
+        x <- .vigenere_decrypt(x, key, square, keep_punctuation)
+    }
+    return(x)
+}
+```

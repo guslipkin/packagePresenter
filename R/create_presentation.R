@@ -1,3 +1,13 @@
+#' Title
+#'
+#' @param package A file path to the root directory of an R package source
+#'   folder.
+#' @param file The file name for your .qmd file. This can be a path so long as
+#'   it ends with a `file_name.qmd`
+#'
+#' @return This function creates and renders a .qmd presentation but does not
+#'   return an R object.
+#' @export
 create_presentation <- function(package, file = "") {
 
   # if I do package = getwd() in the arguments or the below chunk then I get
@@ -17,21 +27,20 @@ create_presentation <- function(package, file = "") {
     file.create(file)
   }
 
-  r_files <- paste0(package, "/R")
-  package_functions <- list.files(r_files, pattern = "\\.R$")
+  title_contents <-
+    .get_title(package) |>
+    .collate_title()
 
   package_contents <-
     .get_description(package) |>
     .collate_description()
 
+  r_files <- paste0(package, "/R")
+  package_functions <- list.files(r_files, pattern = "\\.R$")
   function_contents <-
     paste0(r_files, "/", package_functions) |>
     lapply(.get_functions) |>
     unlist()
-
-  title_contents <-
-    .get_title(package) |>
-    .collate_title()
 
   file_contents <- c(
     title_contents,
@@ -47,6 +56,6 @@ create_presentation <- function(package, file = "") {
 
 }
 
-package <- "/Users/guslipkin/Documents/GitHub/cipheR"
+# package <- "/Users/guslipkin/Documents/GitHub/cipheR"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
-create_presentation(package)
+# create_presentation(package)

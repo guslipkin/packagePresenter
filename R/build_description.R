@@ -1,3 +1,10 @@
+#' Title
+#'
+#' @inheritParams create_presentation
+#'
+#' @return A list of roxygen2 properties for the package's DESCRIPTION file used
+#'   to create the package description slide
+#' @keywords internal
 .get_description <- function(package) {
   desc_file <- glue::glue("{package}/DESCRIPTION")
 
@@ -12,6 +19,12 @@
   )
 }
 
+#' Title
+#'
+#' @param package_details A list of function details from `.get_description`
+#'
+#' @return A character vector of properties formatted for writing to a file
+#' @keywords internal
 .collate_description <- function(package_details) {
   description_header <- glue::glue("\n\n## {package_details$title}")
 
