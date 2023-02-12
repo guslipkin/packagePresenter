@@ -20,44 +20,14 @@ create_presentation <- function(package, file = "") {
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
 
+  package_contents <-
+    .get_description(package) |>
+    .collate_description()
+
   function_contents <-
     paste0(r_files, "/", package_functions) |>
-    lapply(\(f) {
-      # f <- paste0(r_files, "/", package_functions)[1]
-      f <- roxygen2::parse_file(f)
-      function_details <- .get_tags(f[[1]])
-
-      function_details$title <- glue::glue("\n\n# {function_details$title}")
-
-      function_details$description <- glue::glue("- Description: {function_details$description}")
-
-      function_details$returns <- glue::glue("- Returns: {function_details$returns}")
-
-      param_header <- "\n\n## Parameters"
-      function_details$param <- .process_params(function_details$param)
-
-      examples_header <- "\n\n## Examples"
-      function_details$examples <- glue::glue("```{r}\n#| echo: true{{function_details$examples}\n```", .open = "{{")
-
-      function_file_header <- glue::glue("\n\n## `{rev(strsplit(f[[1]]$file, '/')[[1]])[1]}`")
-      function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
-
-      function_contents <- c(
-        function_details$title,
-        function_details$description,
-        function_details$returns,
-        param_header,
-        function_details$param,
-        examples_header,
-        function_details$examples,
-        function_file_header,
-        function_details$code
-      )
-
-      return(function_contents)
-    }) |>
+    lapply(.get_functions) |>
     unlist()
-    # print()
 
   file_header <- c(
     "---",
@@ -70,6 +40,7 @@ create_presentation <- function(package, file = "") {
 
   file_contents <- c(
     file_header,
+    package_contents,
     function_contents
   )
 
@@ -81,7 +52,18 @@ create_presentation <- function(package, file = "") {
 
 }
 
+.get_functions <- function(file) {
+  # file <- paste0(r_files, "/", package_functions)[1]
+  f <- roxygen2::parse_file(file)
+  function_details <- .get_tags(f[[1]])
+
+  function_contents <- .collate_functions(function_details)
+
+  return(function_contents)
+}
+
 .get_tags <- function(block) {
+  file <- rev(strsplit(block$file, '/')[[1]])[1]
   title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
   description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
   returns <- roxygen2::block_get_tags(block, "returns")[[1]]$raw
@@ -100,6 +82,7 @@ create_presentation <- function(package, file = "") {
   code <- rlang::expr_text(block$call)
 
   list(
+    "file" = file,
     "title" = title,
     "description" = description,
     "returns" = returns,
@@ -107,6 +90,65 @@ create_presentation <- function(package, file = "") {
     "examples" = examples,
     "code" = code
   )
+}
+
+.collate_functions <- function(function_details) {
+  function_details$title <- glue::glue("\n\n# {function_details$title}")
+
+  function_details$description <- glue::glue("- Description: {function_details$description}")
+
+  function_details$returns <- glue::glue("- Returns: {function_details$returns}")
+
+  param_header <- "\n\n## Parameters"
+  function_details$param <- .process_params(function_details$param)
+
+  examples_header <- "\n\n## Examples"
+  function_details$examples <- glue::glue("```{r}\n#| echo: true{{function_details$examples}\n```", .open = "{{")
+
+  function_file_header <- glue::glue("\n\n## `{function_details$file}`")
+  function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
+
+  function_contents <- c(
+    function_details$title,
+    function_details$description,
+    function_details$returns,
+    param_header,
+    function_details$param,
+    examples_header,
+    function_details$examples,
+    function_file_header,
+    function_details$code
+  )
+
+  return(function_contents)
+}
+
+.get_description <- function(package) {
+  desc_file <- glue::glue("{package}/DESCRIPTION")
+
+  lib <- desc::desc_get("Package", desc_file)
+  title <- desc::desc_get("Title", desc_file)
+  description <- desc::desc_get("Description", desc_file)
+
+  list(
+    "lib" = lib,
+    "title" = title,
+    "description" = description
+  )
+}
+
+.collate_description <- function(package_details) {
+  description_header <- glue::glue("\n\n## {package_details$title}")
+
+  package_details$lib <- glue::glue("\n\n```{r}\n#| echo: false\nlibrary({{package_details$lib})\n```", .open = "{{")
+
+  package_contents <- c(
+    description_header,
+    package_details$description,
+    package_details$lib
+  )
+
+  return(package_contents)
 }
 
 .process_params <- function(param) {
