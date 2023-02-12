@@ -29,17 +29,12 @@ create_presentation <- function(package, file = "") {
     lapply(.get_functions) |>
     unlist()
 
-  file_header <- c(
-    "---",
-    glue::glue("title: {package_name}"),
-    "format:",
-    "  revealjs:",
-    "    navigation-mode: vertical",
-    "---"
-  )
+  title_contents <-
+    .get_title(package) |>
+    .collate_title()
 
   file_contents <- c(
-    file_header,
+    title_contents,
     package_contents,
     function_contents
   )
@@ -121,6 +116,31 @@ create_presentation <- function(package, file = "") {
   )
 
   return(function_contents)
+}
+
+.get_title <- function(package) {
+  desc_file <- glue::glue("{package}/DESCRIPTION")
+
+  lib <- desc::desc_get("Package", desc_file)
+  version <- desc::desc_get_version(desc_file)
+
+  list(
+    "lib" = lib,
+    "version" = version
+  )
+}
+
+.collate_title <- function(title_details) {
+  title_contents <- c(
+    "---",
+    glue::glue("title: {title_details$lib}"),
+    glue::glue("subtitle: {title_details$version}"),
+    "format:",
+    "  revealjs:",
+    "    navigation-mode: vertical",
+    "    self-contained: true",
+    "---"
+  )
 }
 
 .get_description <- function(package) {
