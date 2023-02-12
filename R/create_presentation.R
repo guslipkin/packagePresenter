@@ -15,7 +15,7 @@
 #' @return This function creates and renders a .qmd presentation but does not
 #'   return an R object.
 #' @export
-create_presentation <- function(package, file = "") {
+create_presentation <- function(package = getwd(), file = "") {
 
   # if I do package = getwd() in the arguments or the below chunk then I get
   #   a recursive loop when I try to assign file in the live block below

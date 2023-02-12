@@ -1293,7 +1293,7 @@ margin-right: 0; }
 </section>
 <section id="create_presentation.r" class="slide level2">
 <h2><code>create_presentation.R</code></h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>create_presentation <span class="ot">&lt;-</span> <span class="cf">function</span>(package, <span class="at">file =</span> <span class="st">&quot;&quot;</span>) {</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>create_presentation <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">package =</span> <span class="fu">getwd</span>(), <span class="at">file =</span> <span class="st">&quot;&quot;</span>) {</span>
 <span id="cb4-2"><a href="#cb4-2"></a>    <span class="cf">if</span> (file <span class="sc">==</span> <span class="st">&quot;&quot;</span>) {</span>
 <span id="cb4-3"><a href="#cb4-3"></a>        package_name <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">strsplit</span>(package, <span class="st">&quot;/&quot;</span>)[[<span class="dv">1</span>]])[<span class="dv">1</span>]</span>
 <span id="cb4-4"><a href="#cb4-4"></a>        file <span class="ot">&lt;-</span> package_name</span>
@@ -1319,8 +1319,8 @@ margin-right: 0; }
 <span id="cb4-24"><a href="#cb4-24"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section></section>
 <section>
-<section id="title-3" class="title-slide slide level1 center">
-<h1>Title</h1>
+<section id="get-a-description-property" class="title-slide slide level1 center">
+<h1>Get a DESCRIPTION Property</h1>
 <ul>
 <li><strong>Return</strong>: A length-one character vector with the desired text from a package’s DESCRIPTION file</li>
 </ul>

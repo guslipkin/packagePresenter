@@ -95,7 +95,7 @@ it ends with a `file_name.qmd`
 
 ## `create_presentation.R`
 ```{.r}
-create_presentation <- function(package, file = "") {
+create_presentation <- function(package = getwd(), file = "") {
     if (file == "") {
         package_name <- rev(strsplit(package, "/")[[1]])[1]
         file <- package_name
@@ -121,7 +121,7 @@ create_presentation <- function(package, file = "") {
 }
 ```
 
-# Title
+# Get a DESCRIPTION Property
 - **Return**: A length-one character vector with the desired text from a package's
   DESCRIPTION file
 
