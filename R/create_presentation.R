@@ -1,4 +1,4 @@
-#' Title
+#' Create a Revealjs Presentation with Quarto
 #'
 #' @description When pointed at the root directory of an R Package Project, this
 #'   function will automatically generate and render a Quarto/Revealjs
@@ -63,6 +63,6 @@ create_presentation <- function(package, file = "") {
 
 }
 
-# package <- "/Users/guslipkin/Documents/GitHub/cipheR"
+# package <- "/Users/guslipkin/Documents/GitHub/pkgslides"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
 # create_presentation(package)

@@ -6,11 +6,9 @@
 #'   to create the package description slide
 #' @keywords internal
 .get_description <- function(package) {
-  desc_file <- glue::glue("{package}/DESCRIPTION")
-
-  lib <- desc::desc_get("Package", desc_file)
-  title <- desc::desc_get("Title", desc_file)
-  description <- desc::desc_get("Description", desc_file)
+  lib <- .get_desc(package, "Package")
+  title <- .get_desc(package, "Title")
+  description <- .get_desc(package, "Description")
 
   list(
     "lib" = lib,

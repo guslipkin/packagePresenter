@@ -7,7 +7,7 @@
 .collate_functions(function_details)
 }
 \arguments{
-\item{function_details}{A list of function details from `.get_tags`}
+\item{function_details}{A list of function details from `.get_tag_list`}
 }
 \value{
 A character vector of properties formatted for writing to a file

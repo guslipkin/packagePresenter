@@ -6,10 +6,8 @@
 #'   to create the title slide
 #' @keywords internal
 .get_title <- function(package) {
-  desc_file <- glue::glue("{package}/DESCRIPTION")
-
-  lib <- desc::desc_get("Package", desc_file)
-  version <- desc::desc_get_version(desc_file)
+  lib <- .get_desc(package, "Package")
+  version <- .get_desc(package, "Version")
 
   list(
     "lib" = lib,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/create_presentation.R
 \name{create_presentation}
 \alias{create_presentation}
-\title{Title}
+\title{Create a Revealjs Presentation with Quarto}
 \usage{
 create_presentation(package, file = "")
 }
@@ -18,5 +18,10 @@ This function creates and renders a .qmd presentation but does not
   return an R object.
 }
 \description{
-Title
+When pointed at the root directory of an R Package Project, this
+  function will automatically generate and render a Quarto/Revealjs
+  presentation for that package. It will have a title slide and description
+  slide generated from the package's DESCRIPTION file and each exported
+  function will have slides with its description and returns, parameters,
+  examples, and source code.
 }
