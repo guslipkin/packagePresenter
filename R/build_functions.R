@@ -1,0 +1,78 @@
+.get_functions <- function(file) {
+  # file <- paste0(r_files, "/", package_functions)[1]
+  f <- roxygen2::parse_file(file)
+
+  function_contents <-
+    .get_tags(f[[1]]) |>
+    .collate_functions()
+
+  return(function_contents)
+}
+
+.get_tags <- function(block) {
+  file <- rev(strsplit(block$file, '/')[[1]])[1]
+  title <- roxygen2::block_get_tags(block, "title")[[1]]$raw
+  description <- roxygen2::block_get_tags(block, "description")[[1]]$raw
+  returns <- roxygen2::block_get_tags(block, "returns")[[1]]$raw
+  examples <- roxygen2::block_get_tags(block, "examples")[[1]]$raw
+
+  param <-
+    roxygen2::block_get_tags(block, "param") |>
+    lapply(\(tag) {
+      tag <- roxygen2::tag_name_description(tag)
+      list(
+        "name" = tag$val$name,
+        "param_description" = tag$val$description
+      )
+    })
+
+  code <- rlang::expr_text(block$call)
+
+  list(
+    "file" = file,
+    "title" = title,
+    "description" = description,
+    "returns" = returns,
+    "param" = param,
+    "examples" = examples,
+    "code" = code
+  )
+}
+
+.collate_functions <- function(function_details) {
+  function_details$title <- glue::glue("\n\n# {function_details$title}")
+
+  function_details$description <- glue::glue("- Description: {function_details$description}")
+
+  function_details$returns <- glue::glue("- Returns: {function_details$returns}")
+
+  param_header <- "\n\n## Parameters"
+  function_details$param <- .process_params(function_details$param)
+
+  examples_header <- "\n\n## Examples"
+  function_details$examples <- glue::glue("```{r}\n#| echo: true{{function_details$examples}\n```", .open = "{{")
+
+  function_file_header <- glue::glue("\n\n## `{function_details$file}`")
+  function_details$code <- glue::glue("```{.r}\n{{function_details$code}\n```", .open = "{{")
+
+  function_contents <- c(
+    function_details$title,
+    function_details$description,
+    function_details$returns,
+    param_header,
+    function_details$param,
+    examples_header,
+    function_details$examples,
+    function_file_header,
+    function_details$code
+  )
+
+  return(function_contents)
+}
+
+.process_params <- function(param) {
+  sapply(param, \(p) {
+    glue::glue("- `{p$name}`: {p$param_description}")
+  }) |>
+    paste0(collapse = "\n")
+}
