@@ -10,3 +10,25 @@
 .get_desc <- function(package, tag) {
   desc::desc_get(tag, glue::glue("{package}/DESCRIPTION"))
 }
+
+#' Puts Content in an `r-fit-content` div
+#'
+#' @param content A length-one character vector
+#'
+#' @return A length-one character vector that renders a Quarto `r-fit-content`
+#'   div
+#' @keywords internal
+.fit_content <- function(content) {
+  glue::glue("\n\n::: {.r-fit-text}\n\n{{content}\n\n:::", .open = "{{")
+}
+
+#' Title
+#'
+#' @param path A file path
+#'
+#' @return A length-one character vector with the last portion of the supplied
+#'   path
+#' @keywords internal
+.get_file_from_path <- function(path) {
+  rev(strsplit(path, '/')[[1]])[1]
+}
