@@ -1,0 +1,12 @@
+format:
+  theme: default
+  functions: auto
+
+slides:
+  - file: yaml.R
+    slides: auto
+  - file: build_title.R # will only include functions in slides
+    slides:
+      - .get_title
+      - .collate_title
+  - file: create_presentation.R # will include all functions

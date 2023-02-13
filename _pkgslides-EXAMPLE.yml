@@ -1,0 +1,36 @@
+format:
+  theme: default
+  functions:
+    description: {true, false}
+    returns: {true, false}
+    parameters: {true, false}
+    examples: {true, false}
+    code: {true, false}
+    tests: {true, false}
+
+slides:
+  - file: source1.R # will only include functions in slides
+    slides:
+      - function1
+      - function2
+  - file: source2.R # will include all functions
+  - file: source3.R
+    slides: auto
+
+---
+
+# Other options
+
+format:
+  functions: {auto}
+# 'auto' is the same as setting all slides to 'true'. This will show all slides for which content exists.
+
+format:
+  theme: {default, ...}
+# see https://quarto.org/docs/presentations/revealjs/themes.html#using-themes
+# this is passed directly to the quarto document
+
+slides: {auto, exported, all}
+# 'auto' uses exported functions and internal functions in the same file as an exported function
+# 'exported' uses only exported functions
+# 'all' The default behavior, but should be there if the yml file exists
