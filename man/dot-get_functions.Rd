@@ -4,7 +4,7 @@
 \alias{.get_functions}
 \title{Title}
 \usage{
-.get_functions(file)
+.get_functions(package)
 }
 \arguments{
 \item{file}{A file path}

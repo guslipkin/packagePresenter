@@ -26,7 +26,10 @@
 .collate_description <- function(package_details) {
   description_header <- glue::glue("\n\n## {package_details$title}")
 
-  package_details$lib <- glue::glue("\n\n```{r}\n#| echo: false\nlibrary({{package_details$lib})\n```", .open = "{{")
+  package_details$description <- .fit_content(package_details$description)
+
+  package_details$lib <-
+    glue::glue("\n\n```{r}\n#| echo: false\nlibrary({{package_details$lib})\n```", .open = "{{")
 
   package_contents <- c(
     description_header,

@@ -4,7 +4,7 @@
 \alias{.collate_slide}
 \title{Collates a Slide with a Header and Content}
 \usage{
-.collate_slide(header, content, string = "{{content}")
+.collate_slide(header, content, string = "{{content}", fit = TRUE)
 }
 \arguments{
 \item{header}{A length-one character vector. These usually start with
@@ -12,6 +12,9 @@
 
 \item{content}{A length-one character vector with the function_details for
 the slide}
+
+\item{fit}{A logical if `r-fit-text` should be applied to the content
+supplied}
 }
 \value{
 A length-two character vector

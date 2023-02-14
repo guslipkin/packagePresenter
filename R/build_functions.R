@@ -4,13 +4,16 @@
 #'
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
-.get_functions <- function(file) {
+.get_functions <- function(package) {
   # file <- paste0(r_files, "/", package_functions)[4]
-  f <- roxygen2::parse_file(file)
+  # f <- roxygen2::parse_file(file)
+  yaml <- .parse_yaml(package)
 
   function_contents <-
-    .get_tag_list(f[[1]]) |>
-    .collate_functions()
+    .get_roxygen(package, yaml) |>
+    lapply(.get_tag_list) |>
+    lapply(.collate_functions) |>
+    unlist()
   return(function_contents)
 }
 
@@ -21,7 +24,11 @@
 #' @return A list of roxygen2 tags for a specific source file
 #' @keywords internal
 .get_tag_list <- function(block) {
-  file <- rev(strsplit(block$file, '/')[[1]])[1]
+  # block has a name so we need to drop it
+  # this also ensures block has length 1
+  block <- block[[1]]
+  topic <- block$object$topic
+  file <- .get_file_from_path(block$file)
   title <- .get_tag(block, "title")
   description <- .get_tag(block, "description")
   return <- .get_tag(block, c("return", "returns"))
@@ -40,10 +47,11 @@
   code <- rlang::expr_text(block$call)
 
   function_details <- list(
+    "topic" = topic,
     "file" = file,
     "title" = title,
     "description" = description,
-    "returns" = return,
+    "return" = return,
     "param" = param,
     "examples" = examples,
     "code" = code
@@ -59,11 +67,7 @@
 #' @return Returns the raw text of the desired tag
 #' @keywords internal
 .get_tag <- function(block, tag) {
-  tag <- roxygen2::block_get_tags(block, tag)
-
-  if (length(tag) == 1) { tag <- tag[[1]]$raw }
-  else { tag <- NA }
-
+  tag <- roxygen2::block_get_tag_value(block, tag)
   return(tag)
 }
 
@@ -74,25 +78,39 @@
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
 .collate_functions <- function(function_details) {
-  function_details$description <- .collate_slide(
-    "- **Description**: ",
-    function_details$description
+  function_details$topic <- .collate_slide(
+    "- **Topic:** ",
+    function_details$topic,
+    "`{{content}`",
+    fit = FALSE
   ) |>
+    paste0(collapse = "")
+
+  function_details$description <- .collate_slide(
+      "\n\n- **Description:** ",
+      function_details$description,
+      fit = FALSE
+    ) |>
     paste0(collapse = "")
 
   function_details$return <- .collate_slide(
-    "- **Return**: ",
-    function_details$return
-  ) |>
+      "\n\n- **Return:** ",
+      function_details$return,
+      fit = FALSE
+    ) |>
     paste0(collapse = "")
 
-  function_details$title <- .collate_slide(
-    glue::glue("\n\n# {function_details$title}"),
+  title_details <-
     paste0(
+      function_details$topic,
       function_details$description,
       function_details$return,
-      collapse = "\n"
-      )
+      collapse = ""
+    )
+
+  function_details$title <- .collate_slide(
+      glue::glue("\n\n# {function_details$title}"),
+      title_details
     )
 
   function_details$param <- .collate_slide(
@@ -131,15 +149,21 @@
 #'   `glue::glue(string, .open = "{{")` where the object being replaced is
 #'   `content`. This is done to avoid needing to reach outside the function
 #'   environment to access `content`.
+#' @param fit A logical if `r-fit-text` should be applied to the content
+#'   supplied
 #'
 #' @return A length-two character vector
 #' @keywords internal
-.collate_slide <- function(header, content, string = "{{content}") {
-  if (is.na(content)) { return("") }
+.collate_slide <- function(header, content, string = "{{content}", fit = TRUE) {
+  if (is.null(content)) { return("") }
+
+  string <- glue::glue(string, .open = "{{")
+
+  if (fit) { string <- .fit_content(string) }
 
   content <- c(
     header,
-    glue::glue(string, .open = "{{")
+    string
   )
   return(content)
 }
