@@ -9,6 +9,9 @@ format:
 ---
 
 ## Automatically Generate Presentations for Source Code
+
+::: {.r-fit-text}
+
 When pointed at the root directory of an R Package Project, this 
   function will automatically generate and render a Quarto/Revealjs 
   presentation for that package. It will have a title slide and description 
@@ -16,57 +19,78 @@ When pointed at the root directory of an R Package Project, this
   function will have slides with its description and returns, parameters, 
   examples, and source code.
 
+:::
+
 ```{r}
 #| echo: false
 library(pkgslides)
 ```
 
-# Title
-- **Return**: A list of roxygen2 properties for the package's DESCRIPTION file used
-  to create the package description slide
+# Parse `_pkgslides.yml`
+
+::: {.r-fit-text}
+
+- **Topic:** `.parse_yaml`
+
+- **Return:** A list
+
+:::
 
 
 ## Parameters
 
+::: {.r-fit-text}
+
+- `package`: A file path to the root directory of an R package source
+folder.
+
+:::
 
 
-## `build_description.R`
+## `yaml.R`
+
+::: {.r-fit-text}
+
 ```{.r}
-.get_description <- function(package) {
-    lib <- .get_desc(package, "Package")
-    title <- .get_desc(package, "Title")
-    description <- .get_desc(package, "Description")
-    list(lib = lib, title = title, description = description)
+.parse_yaml <- function(package) {
+    file <- glue::glue("{package}/_pkgslides.yml")
+    if (file.exists(file)) {
+        yaml <- yaml::read_yaml(file)
+    }
+    else {
+        yaml <- NULL
+    }
+    return(yaml)
 }
 ```
 
-# Title
-- **Return**: A character vector of properties formatted for writing to a file
-
-
-## Parameters
-- `file`: A file path
-
-
-## `build_functions.R`
-```{.r}
-.get_functions <- function(file) {
-    f <- roxygen2::parse_file(file)
-    function_contents <- .collate_functions(.get_tag_list(f[[1]]))
-    return(function_contents)
-}
-```
+:::
 
 # Title
-- **Return**: A list of roxygen2 properties for the package's DESCRIPTION file used
+
+::: {.r-fit-text}
+
+- **Topic:** `.get_title`
+
+- **Return:** A list of roxygen2 properties for the package's DESCRIPTION file used
   to create the title slide
 
+:::
+
 
 ## Parameters
 
+::: {.r-fit-text}
+
+
+
+:::
 
 
 ## `build_title.R`
+
+::: {.r-fit-text}
+
 ```{.r}
 .get_title <- function(package) {
     lib <- .get_desc(package, "Package")
@@ -75,29 +99,47 @@ library(pkgslides)
 }
 ```
 
+:::
+
 # Create a Revealjs Presentation with Quarto
-- **Description**: When pointed at the root directory of an R Package Project, this
+
+::: {.r-fit-text}
+
+- **Topic:** `create_presentation`
+
+- **Description:** When pointed at the root directory of an R Package Project, this
   function will automatically generate and render a Quarto/Revealjs
   presentation for that package. It will have a title slide and description
   slide generated from the package's DESCRIPTION file and each exported
   function will have slides with its description and returns, parameters,
   examples, and source code.
-- **Return**: This function creates and renders a .qmd presentation but does not
+
+- **Return:** This function creates and renders a .qmd presentation but does not
   return an R object.
+
+:::
 
 
 ## Parameters
+
+::: {.r-fit-text}
+
 - `package`: A file path to the root directory of an R package source
 folder.
 - `file`: The file name for your .qmd file. This can be a path so long as
 it ends with a `file_name.qmd`
 
+:::
+
 
 ## `create_presentation.R`
+
+::: {.r-fit-text}
+
 ```{.r}
 create_presentation <- function(package = getwd(), file = "") {
     if (file == "") {
-        package_name <- rev(strsplit(package, "/")[[1]])[1]
+        package_name <- .get_file_from_path(package)
         file <- package_name
     }
     if (grepl("\\.qmd$", file)) {
@@ -111,8 +153,7 @@ create_presentation <- function(package = getwd(), file = "") {
     package_contents <- .collate_description(.get_description(package))
     r_files <- paste0(package, "/R")
     package_functions <- list.files(r_files, pattern = "\\.R$")
-    function_contents <- unlist(lapply(paste0(r_files, "/", package_functions), 
-        .get_functions))
+    function_contents <- .get_functions(package)
     file_contents <- c(title_contents, package_contents, function_contents)
     fileConn <- file(file)
     writeLines(file_contents, fileConn)
@@ -121,20 +162,4 @@ create_presentation <- function(package = getwd(), file = "") {
 }
 ```
 
-# Get a DESCRIPTION Property
-- **Return**: A length-one character vector with the desired text from a package's
-  DESCRIPTION file
-
-
-## Parameters
-- `package`: A file path to the root directory of an R package source
-folder.
-- `tag`: The name of the tag whose contents are desired
-
-
-## `misc.R`
-```{.r}
-.get_desc <- function(package, tag) {
-    desc::desc_get(tag, glue::glue("{package}/DESCRIPTION"))
-}
-```
+:::
