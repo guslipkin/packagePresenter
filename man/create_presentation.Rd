@@ -4,7 +4,7 @@
 \alias{create_presentation}
 \title{Create a Revealjs Presentation with Quarto}
 \usage{
-create_presentation(package, file = "")
+create_presentation(package = getwd(), file = "")
 }
 \arguments{
 \item{package}{A file path to the root directory of an R package source

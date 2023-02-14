@@ -17,13 +17,8 @@
 #' @export
 create_presentation <- function(package = getwd(), file = "") {
 
-  # if I do package = getwd() in the arguments or the below chunk then I get
-  #   a recursive loop when I try to assign file in the live block below
-  # if (is.null(package)) {
-  #   package <- getwd()
-  # }
   if (file == "") {
-    package_name <- rev(strsplit(package, '/')[[1]])[1]
+    package_name <- .get_file_from_path(package)
     file <- package_name
   }
 
@@ -44,10 +39,7 @@ create_presentation <- function(package = getwd(), file = "") {
 
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
-  function_contents <-
-    paste0(r_files, "/", package_functions) |>
-    lapply(.get_functions) |>
-    unlist()
+  function_contents <- .get_functions(package)
 
   file_contents <- c(
     title_contents,
