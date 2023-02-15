@@ -12,7 +12,7 @@
 \item{file}{A file path}
 }
 \value{
-A character vector of properties formatted for writing to a file
+A list of details ready to be collated into slides
 }
 \description{
 Title

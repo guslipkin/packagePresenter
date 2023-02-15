@@ -46,6 +46,26 @@
 #' Title
 #'
 #' @param p A list of roxygen2 blocks
+#' @param exported A boolean if you want exported or non-exported functions
+#'   returned
+#'
+#' @return A list of roxygen2 blocks
+#' @keywords internal
+.filter_roxygen_exported <- function(p, exported = TRUE) {
+  p <- lapply(p, \(p) {
+    p_exported <- roxygen2::block_has_tags(p, "export")
+    if (exported & p_exported) { return(p) }
+    else if (!exported & !p_exported) { return(p) }
+    return(NULL)
+  })
+  p[sapply(p, is.null)] <- NULL
+
+  return(p)
+}
+
+#' Title
+#'
+#' @param p A list of roxygen2 blocks
 #' @param slides A list from `_pkgslides.yml`
 #'
 #' @return A list of roxygen2 blocks
@@ -65,26 +85,6 @@
       unlist(recursive = FALSE) |>
       unname()
   }
-
-  return(p)
-}
-
-#' Title
-#'
-#' @param p A list of roxygen2 blocks
-#' @param exported A boolean if you want exported or non-exported functions
-#'   returned
-#'
-#' @return A list of roxygen2 blocks
-#' @keywords internal
-.filter_roxygen_exported <- function(p, exported = TRUE) {
-  p <- lapply(p, \(p) {
-    p_exported <- roxygen2::block_has_tags(p, "export")
-    if (exported & p_exported) { return(p) }
-    else if (!exported & !p_exported) { return(p) }
-    return(NULL)
-  })
-  p[sapply(p, is.null)] <- NULL
 
   return(p)
 }

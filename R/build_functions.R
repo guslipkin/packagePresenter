@@ -3,16 +3,14 @@
 #' @param file A file path
 #' @param yaml A list of properties from `.parse_yaml()`
 #'
-#' @return A character vector of properties formatted for writing to a file
+#' @return A list of details ready to be collated into slides
 #' @keywords internal
 .get_functions <- function(package, yaml) {
   # file <- paste0(r_files, "/", package_functions)[4]
   # f <- roxygen2::parse_file(file)
   function_contents <-
     .get_roxygen(package, yaml) |>
-    lapply(.get_tag_list, yaml) |>
-    lapply(.collate_functions) |>
-    unlist()
+    lapply(.get_tag_list, yaml)
   return(function_contents)
 }
 
@@ -80,8 +78,7 @@
 #' @return Returns the raw text of the desired tag
 #' @keywords internal
 .get_tag <- function(block, tag) {
-  tag <- roxygen2::block_get_tag_value(block, tag)
-  return(tag)
+  roxygen2::block_get_tag_value(block, tag)
 }
 
 #' Title

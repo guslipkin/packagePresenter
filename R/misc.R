@@ -1,3 +1,14 @@
+#' Title
+#'
+#' @param path A file path
+#'
+#' @return A length-one character vector with the last portion of the supplied
+#'   path
+#' @keywords internal
+.get_file_from_path <- function(path) {
+  rev(strsplit(path, '/')[[1]])[1]
+}
+
 #' Get a DESCRIPTION Property
 #'
 #' @param package A file path to the root directory of an R package source
@@ -20,15 +31,4 @@
 #' @keywords internal
 .fit_content <- function(content) {
   glue::glue("\n\n::: {.r-fit-text}\n\n{{content}\n\n:::", .open = "{{")
-}
-
-#' Title
-#'
-#' @param path A file path
-#'
-#' @return A length-one character vector with the last portion of the supplied
-#'   path
-#' @keywords internal
-.get_file_from_path <- function(path) {
-  rev(strsplit(path, '/')[[1]])[1]
 }

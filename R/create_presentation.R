@@ -41,7 +41,10 @@ create_presentation <- function(package = getwd(), file = "") {
 
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
-  function_contents <- .get_functions(package, yaml)
+  function_contents <-
+    .get_functions(package, yaml) |>
+    lapply(.collate_functions) |>
+    unlist()
 
   file_contents <- c(
     title_contents,
