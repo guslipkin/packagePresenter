@@ -1,5 +1,6 @@
 format:
   theme: default
-  functions: auto
+  functions:
+    tests: false
 
 layout: all

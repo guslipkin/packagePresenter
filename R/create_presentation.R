@@ -29,6 +29,8 @@ create_presentation <- function(package = getwd(), file = "") {
     file.create(file)
   }
 
+  yaml <- .parse_yaml(package)
+
   title_contents <-
     .get_title(package) |>
     .collate_title()
@@ -39,7 +41,7 @@ create_presentation <- function(package = getwd(), file = "") {
 
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
-  function_contents <- .get_functions(package)
+  function_contents <- .get_functions(package, yaml)
 
   file_contents <- c(
     title_contents,

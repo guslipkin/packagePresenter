@@ -4,10 +4,12 @@
 \alias{.get_tag_list}
 \title{Gets a List of Roxygen2 Tags}
 \usage{
-.get_tag_list(block)
+.get_tag_list(block, yaml)
 }
 \arguments{
 \item{block}{A roxygen2 block}
+
+\item{yaml}{A list of properties from `.parse_yaml()`}
 }
 \value{
 A list of roxygen2 tags for a specific source file

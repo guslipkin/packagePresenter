@@ -1,8 +1,6 @@
 format:
   theme: default
   functions:
-    description: {true, false}
-    returns: {true, false}
     parameters: {true, false}
     examples: {true, false}
     code: {true, false}
@@ -22,8 +20,8 @@ layout:
 # Other options
 
 format:
-  functions: {auto}
-# 'auto' is the same as setting all slides to 'true'. This will show all slides for which content exists.
+  # lack of `functions:`
+# Excluding the `functions:` section is the same as setting all slides to 'true'. This will show all slides for which content exists.
 
 format:
   theme: {default, ...}

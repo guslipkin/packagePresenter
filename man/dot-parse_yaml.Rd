@@ -11,7 +11,7 @@
 folder.}
 }
 \value{
-A list
+A list representing a yaml file
 }
 \description{
 Parse `_pkgslides.yml`

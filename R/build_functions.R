@@ -1,17 +1,16 @@
 #' Title
 #'
 #' @param file A file path
+#' @param yaml A list of properties from `.parse_yaml()`
 #'
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
-.get_functions <- function(package) {
+.get_functions <- function(package, yaml) {
   # file <- paste0(r_files, "/", package_functions)[4]
   # f <- roxygen2::parse_file(file)
-  yaml <- .parse_yaml(package)
-
   function_contents <-
     .get_roxygen(package, yaml) |>
-    lapply(.get_tag_list) |>
+    lapply(.get_tag_list, yaml) |>
     lapply(.collate_functions) |>
     unlist()
   return(function_contents)
@@ -20,10 +19,11 @@
 #' Gets a List of Roxygen2 Tags
 #'
 #' @param block A roxygen2 block
+#' @param yaml A list of properties from `.parse_yaml()`
 #'
 #' @return A list of roxygen2 tags for a specific source file
 #' @keywords internal
-.get_tag_list <- function(block) {
+.get_tag_list <- function(block, yaml) {
   # block has a name so we need to drop it
   # this also ensures block has length 1
   block <- block[[1]]
@@ -33,6 +33,8 @@
   description <- .get_tag(block, "description")
   return <- .get_tag(block, c("return", "returns"))
   examples <- .get_tag(block, "examples")
+
+  c("description", "returns", "parameters", "examples", "code",  "tests")
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
@@ -46,16 +48,30 @@
 
   code <- rlang::expr_text(block$call)
 
-  function_details <- list(
-    "topic" = topic,
-    "file" = file,
-    "title" = title,
-    "description" = description,
-    "return" = return,
-    "param" = param,
-    "examples" = examples,
-    "code" = code
-  )
+  function_details <-
+    list(
+      "title" = title,
+      "topic" = topic,
+      "description" = description,
+      "return" = return,
+      "file" = file
+    )
+  # allow optional items to be dropped
+  function_details_yaml <-
+    list(
+      "parameters" = param,
+      "examples" = examples,
+      "code" = code
+    )
+  function_details_yaml <- mapply(
+    .drop_function_options,
+    function_details_yaml, names(function_details_yaml),
+    MoreArgs = list(yaml)
+    ) |>
+    `names<-`(names(function_details_yaml))
+  function_details <-
+    append(function_details, function_details_yaml)
+
   return(function_details)
 }
 
@@ -69,6 +85,19 @@
 .get_tag <- function(block, tag) {
   tag <- roxygen2::block_get_tag_value(block, tag)
   return(tag)
+}
+
+#' Title
+#'
+#' @param item A list item from `.get_tag_list`
+#' @param item_name The name of a list item from `.get_tag_list`
+#' @param yaml A list of properties from `.parse_yaml()`
+#'
+#' @return Either `item` or `NULL`
+#' @keywords internal
+.drop_function_options <- function(item, item_name, yaml) {
+  if (yaml$format$functions[[item_name]]) { return(item) }
+  return(NULL)
 }
 
 #' Title
@@ -113,9 +142,9 @@
       title_details
     )
 
-  function_details$param <- .collate_slide(
+  function_details$parameters <- .collate_slide(
     "\n\n## Parameters",
-    .process_params(function_details$param)
+    .process_params(function_details$parameters)
     )
 
   function_details$examples <- .collate_slide(
@@ -132,7 +161,7 @@
 
   function_contents <- c(
     function_details$title,
-    function_details$param,
+    function_details$parameters,
     function_details$examples,
     function_details$code
   )
@@ -176,6 +205,7 @@
 #'   list for writing to a file
 #' @keywords internal
 .process_params <- function(param) {
+  if (is.null(param)) { return(NULL) }
   sapply(param, \(p) {
     glue::glue("- `{p$name}`: {p$param_description}")
   }) |>

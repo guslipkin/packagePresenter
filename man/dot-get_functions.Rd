@@ -4,9 +4,11 @@
 \alias{.get_functions}
 \title{Title}
 \usage{
-.get_functions(package)
+.get_functions(package, yaml)
 }
 \arguments{
+\item{yaml}{A list of properties from `.parse_yaml()`}
+
 \item{file}{A file path}
 }
 \value{

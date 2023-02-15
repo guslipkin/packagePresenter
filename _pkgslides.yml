@@ -1,6 +1,8 @@
 format:
   theme: default
-  functions: auto
+  functions:
+    tests: false
+    parameters: false
 
 layout:
   - file: yaml.R

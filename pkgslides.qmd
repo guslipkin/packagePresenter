@@ -32,19 +32,10 @@ library(pkgslides)
 
 - **Topic:** `.parse_yaml`
 
-- **Return:** A list
+- **Return:** A list representing a yaml file
 
 :::
 
-
-## Parameters
-
-::: {.r-fit-text}
-
-- `package`: A file path to the root directory of an R package source
-folder.
-
-:::
 
 
 ## `yaml.R`
@@ -55,10 +46,10 @@ folder.
 .parse_yaml <- function(package) {
     file <- glue::glue("{package}/_pkgslides.yml")
     if (file.exists(file)) {
-        yaml <- yaml::read_yaml(file)
+        yaml <- .check_yaml(yaml::read_yaml(file))
     }
     else {
-        yaml <- NULL
+        yaml <- .check_yaml(list())
     }
     return(yaml)
 }
@@ -77,14 +68,6 @@ folder.
 
 :::
 
-
-## Parameters
-
-::: {.r-fit-text}
-
-
-
-:::
 
 
 ## `build_title.R`
@@ -120,17 +103,6 @@ folder.
 :::
 
 
-## Parameters
-
-::: {.r-fit-text}
-
-- `package`: A file path to the root directory of an R package source
-folder.
-- `file`: The file name for your .qmd file. This can be a path so long as
-it ends with a `file_name.qmd`
-
-:::
-
 
 ## `create_presentation.R`
 
@@ -149,11 +121,12 @@ create_presentation <- function(package = getwd(), file = "") {
         file <- paste0(file, ".qmd")
         file.create(file)
     }
+    yaml <- .parse_yaml(package)
     title_contents <- .collate_title(.get_title(package))
     package_contents <- .collate_description(.get_description(package))
     r_files <- paste0(package, "/R")
     package_functions <- list.files(r_files, pattern = "\\.R$")
-    function_contents <- .get_functions(package)
+    function_contents <- .get_functions(package, yaml)
     file_contents <- c(title_contents, package_contents, function_contents)
     fileConn <- file(file)
     writeLines(file_contents, fileConn)

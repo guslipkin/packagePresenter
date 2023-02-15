@@ -4,7 +4,7 @@
 \alias{.filter_roxygen_custom}
 \title{Title}
 \usage{
-.filter_roxygen_custom(p, slides)
+.filter_roxygen_custom(p, layout)
 }
 \arguments{
 \item{p}{A list of roxygen2 blocks}

@@ -9,9 +9,7 @@
 .get_roxygen <- function(package, yaml) {
   p <- roxygen2::parse_package(package)
 
-  if (!is.null(yaml)) {
-    p <- .choose_slides(p, yaml$layout)
-  }
+  p <- .choose_slides(p, yaml$layout)
   return(p)
 }
 

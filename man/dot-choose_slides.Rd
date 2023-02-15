@@ -4,7 +4,7 @@
 \alias{.choose_slides}
 \title{Title}
 \usage{
-.choose_slides(p, slides)
+.choose_slides(p, layout)
 }
 \arguments{
 \item{p}{A list of roxygen2 blocks}
