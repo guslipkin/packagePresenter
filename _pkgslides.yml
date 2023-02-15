@@ -2,7 +2,7 @@ format:
   theme: default
   functions: auto
 
-slides:
+layout:
   - file: yaml.R
     slides: auto
   - file: build_title.R # will only include functions in slides

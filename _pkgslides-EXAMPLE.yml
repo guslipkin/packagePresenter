@@ -8,7 +8,7 @@ format:
     code: {true, false}
     tests: {true, false}
 
-slides:
+layout:
   - file: source1.R # will only include functions in slides
     slides:
       - function1
@@ -30,7 +30,7 @@ format:
 # see https://quarto.org/docs/presentations/revealjs/themes.html#using-themes
 # this is passed directly to the quarto document
 
-slides: {auto, exported, all}
+layout: {auto, exported, all}
 # 'auto' uses exported functions and internal functions in the same file as an exported function
 # 'exported' uses only exported functions
 # 'all' The default behavior, but should be there if the yml file exists

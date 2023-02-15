@@ -10,7 +10,7 @@
   p <- roxygen2::parse_package(package)
 
   if (!is.null(yaml)) {
-    p <- .choose_slides(p, yaml$slides)
+    p <- .choose_slides(p, yaml$layout)
   }
   return(p)
 }
@@ -22,17 +22,17 @@
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
-.choose_slides <- function(p, slides) {
-  if (is.atomic(slides) & length(slides) == 1) {
-    if (slides == "auto") {
+.choose_slides <- function(p, layout) {
+  if (is.atomic(layout) & length(layout) == 1) {
+    if (layout == "auto") {
       p <- .filter_roxygen_auto(p)
-    } else if (slides == "exported") {
+    } else if (layout == "exported") {
       p <- .filter_roxygen_exported(p)
-    } else if (slides == "all") {
+    } else if (layout == "all") {
       # p already is all
     }
   } else {
-    p <- .filter_roxygen_custom(p, slides)
+    p <- .filter_roxygen_custom(p, layout)
   }
 
   return(p)
@@ -87,12 +87,12 @@
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
-.filter_roxygen_custom <- function(p, slides) {
+.filter_roxygen_custom <- function(p, layout) {
   package_files <-
     vapply(p, \(p) .get_file_from_path(p$file), FUN.VALUE = "character")
   yaml_files <-
-    vapply(slides, \(s) s$file, FUN.VALUE = "character")
-  yaml_slides <- sapply(slides, \(s) {
+    vapply(layout, \(s) s$file, FUN.VALUE = "character")
+  yaml_slides <- sapply(layout, \(s) {
     if (is.null(s$slides)) { return("all") }
     return(s$slides)
     }) |>
