@@ -8,10 +8,15 @@
 }
 \arguments{
 \item{header}{A length-one character vector. These usually start with
-`\n\n##`}
+`\\n\\n##`}
 
 \item{content}{A length-one character vector with the function_details for
 the slide}
+
+\item{string}{A length-one character vector formatted to be used in
+`glue::glue(string, .open = "\{\{")` where the object being replaced is
+`content`. This is done to avoid needing to reach outside the function
+environment to access `content`.}
 
 \item{fit}{A logical if `r-fit-text` should be applied to the content
 supplied}

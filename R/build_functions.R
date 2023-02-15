@@ -24,9 +24,6 @@
 #' @return A list of roxygen2 tags for a specific source file
 #' @keywords internal
 .get_tag_list <- function(block, yaml) {
-  # block has a name so we need to drop it
-  # this also ensures block has length 1
-  block <- block[[1]]
   topic <- block$object$topic
   file <- .get_file_from_path(block$file)
   title <- .get_tag(block, "title")
@@ -171,11 +168,11 @@
 #' Collates a Slide with a Header and Content
 #'
 #' @param header A length-one character vector. These usually start with
-#'   `\n\n##`
+#'   `\\n\\n##`
 #' @param content A length-one character vector with the function_details for
 #'   the slide
 #' @param string A length-one character vector formatted to be used in
-#'   `glue::glue(string, .open = "{{")` where the object being replaced is
+#'   `glue::glue(string, .open = "\{\{")` where the object being replaced is
 #'   `content`. This is done to avoid needing to reach outside the function
 #'   environment to access `content`.
 #' @param fit A logical if `r-fit-text` should be applied to the content

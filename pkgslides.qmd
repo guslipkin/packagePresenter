@@ -4,6 +4,7 @@ title: pkgslides
 subtitle: 0.1.0
 format:
   revealjs:
+    theme: default
     navigation-mode: vertical
     self-contained: true
 ---
@@ -26,6 +27,28 @@ When pointed at the root directory of an R Package Project, this
 library(pkgslides)
 ```
 
+# Create `_pkgslides.yml`
+
+::: {.r-fit-text}
+
+- **Topic:** `create_yaml`
+
+- **Return:** This will not fill the file, simply create it.
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `package`: A file path to the root directory of an R package source
+folder.
+
+:::
+
+
+
 # Parse `_pkgslides.yml`
 
 ::: {.r-fit-text}
@@ -37,25 +60,37 @@ library(pkgslides)
 :::
 
 
-
-## `yaml.R`
+## Parameters
 
 ::: {.r-fit-text}
 
-```{.r}
-.parse_yaml <- function(package) {
-    file <- glue::glue("{package}/_pkgslides.yml")
-    if (file.exists(file)) {
-        yaml <- .check_yaml(yaml::read_yaml(file))
-    }
-    else {
-        yaml <- .check_yaml(list())
-    }
-    return(yaml)
-}
-```
+- `package`: A file path to the root directory of an R package source
+folder.
 
 :::
+
+
+
+# Fill an Incomplete `_pkgslides.yml`
+
+::: {.r-fit-text}
+
+- **Topic:** `.check_yaml`
+
+- **Return:** A list representing a yaml file
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `yaml`: A list of properties from `.parse_yaml()`
+
+:::
+
+
 
 # Title
 
@@ -69,20 +104,37 @@ library(pkgslides)
 :::
 
 
-
-## `build_title.R`
+## Parameters
 
 ::: {.r-fit-text}
 
-```{.r}
-.get_title <- function(package) {
-    lib <- .get_desc(package, "Package")
-    version <- .get_desc(package, "Version")
-    list(lib = lib, version = version)
-}
-```
+
 
 :::
+
+
+
+# Title
+
+::: {.r-fit-text}
+
+- **Topic:** `.collate_title`
+
+- **Return:** A character vector of properties formatted for writing to a file
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `package_details`: A list of function details from `.get_title`
+- `yaml`: A list of properties from `.parse_yaml()`
+
+:::
+
+
 
 # Create a Revealjs Presentation with Quarto
 
@@ -103,36 +155,15 @@ library(pkgslides)
 :::
 
 
-
-## `create_presentation.R`
+## Parameters
 
 ::: {.r-fit-text}
 
-```{.r}
-create_presentation <- function(package = getwd(), file = "") {
-    if (file == "") {
-        package_name <- .get_file_from_path(package)
-        file <- package_name
-    }
-    if (grepl("\\.qmd$", file)) {
-        file.create(file)
-    }
-    else {
-        file <- paste0(file, ".qmd")
-        file.create(file)
-    }
-    yaml <- .parse_yaml(package)
-    title_contents <- .collate_title(.get_title(package))
-    package_contents <- .collate_description(.get_description(package))
-    r_files <- paste0(package, "/R")
-    package_functions <- list.files(r_files, pattern = "\\.R$")
-    function_contents <- .get_functions(package, yaml)
-    file_contents <- c(title_contents, package_contents, function_contents)
-    fileConn <- file(file)
-    writeLines(file_contents, fileConn)
-    close(fileConn)
-    quarto::quarto_render(file)
-}
-```
+- `package`: A file path to the root directory of an R package source
+folder.
+- `file`: The file name for your .qmd file. This can be a path so long as
+it ends with a `file_name.qmd`
 
 :::
+
+

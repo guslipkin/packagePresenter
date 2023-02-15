@@ -2,7 +2,7 @@ format:
   theme: default
   functions:
     tests: false
-    parameters: false
+    code: false
 
 layout:
   - file: yaml.R

@@ -7,9 +7,39 @@
 #' @return A list of roxygen2 blocks
 #' @keywords internal
 .get_roxygen <- function(package, yaml) {
-  p <- roxygen2::parse_package(package)
+  p <-
+    roxygen2::parse_package(package) |>
+    .organize_functions() |>
+    .choose_slides(yaml$layout)
+  return(p)
+}
 
-  p <- .choose_slides(p, yaml$layout)
+#' Title
+#'
+#' @param p A list of roxygen2 blocks
+#'
+#' @return The list p in the same file order, but functions are organized by
+#'   exported first
+#' @keywords internal
+.organize_functions <- function(p) {
+  files <-
+    p |>
+    sapply(\(b) .get_file_from_path(b$file)) |>
+    unname()
+  unique_files <- unique(files)
+
+  p <-
+    unique_files |>
+    lapply(\(f) {
+      temp_p <- p[which(files == f)]
+      list(
+        .filter_roxygen_exported(temp_p, exported = TRUE),
+        .filter_roxygen_exported(temp_p, exported = FALSE)
+      ) |>
+        unlist(recursive = FALSE)
+    }) |>
+    unlist(recursive = FALSE)
+
   return(p)
 }
 
@@ -30,7 +60,10 @@
       # p already is all
     }
   } else {
-    p <- .filter_roxygen_custom(p, layout)
+    p <-
+      .filter_roxygen_custom(p, layout) |>
+      unlist(recursive = FALSE) |>
+      unname()
   }
 
   return(p)
@@ -39,13 +72,17 @@
 #' Title
 #'
 #' @param p A list of roxygen2 blocks
+#' @param exported A boolean if you want exported or non-exported functions
+#'   returned
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
-.filter_roxygen_exported <- function(p) {
+.filter_roxygen_exported <- function(p, exported = TRUE) {
   p <- lapply(p, \(p) {
-    exported <- roxygen2::block_has_tags(p, "export")
-    if (exported) { return(p) }
+    p_exported <- roxygen2::block_has_tags(p, "export")
+    if (exported & p_exported) { return(p) }
+    else if (!exported & !p_exported) { return(p) }
+    return(NULL)
   })
   p[sapply(p, is.null)] <- NULL
 

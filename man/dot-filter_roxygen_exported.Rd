@@ -4,10 +4,13 @@
 \alias{.filter_roxygen_exported}
 \title{Title}
 \usage{
-.filter_roxygen_exported(p)
+.filter_roxygen_exported(p, exported = TRUE)
 }
 \arguments{
 \item{p}{A list of roxygen2 blocks}
+
+\item{exported}{A boolean if you want exported or non-exported functions
+returned}
 }
 \value{
 A list of roxygen2 blocks
