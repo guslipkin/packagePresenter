@@ -33,7 +33,7 @@ create_presentation <- function(package = getwd(), file = "") {
 
   title_contents <-
     .get_title(package) |>
-    .collate_title()
+    .collate_title(yaml)
 
   package_contents <-
     .get_description(package) |>

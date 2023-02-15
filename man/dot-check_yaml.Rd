@@ -7,7 +7,7 @@
 .check_yaml(yaml)
 }
 \arguments{
-\item{yaml}{}
+\item{yaml}{A list of properties from `.parse_yaml()`}
 }
 \value{
 A list representing a yaml file

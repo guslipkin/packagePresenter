@@ -4,9 +4,11 @@
 \alias{.collate_title}
 \title{Title}
 \usage{
-.collate_title(title_details)
+.collate_title(title_details, yaml)
 }
 \arguments{
+\item{yaml}{A list of properties from `.parse_yaml()`}
+
 \item{package_details}{A list of function details from `.get_title`}
 }
 \value{

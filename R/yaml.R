@@ -19,7 +19,7 @@
 
 #' Fill an Incomplete `_pkgslides.yml`
 #'
-#' @param yaml
+#' @param yaml A list of properties from `.parse_yaml()`
 #'
 #' @return A list representing a yaml file
 #' @keywords internal
