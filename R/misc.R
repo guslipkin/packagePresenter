@@ -32,3 +32,15 @@
 .fit_content <- function(content) {
   glue::glue("\n\n::: {.r-fit-text}\n\n{{content}\n\n:::", .open = "{{")
 }
+
+#' Title
+#'
+#' @param l A list
+#'
+#' @return A list with null values removed
+#' @keywords internal
+.drop_null_from_list <- function(l) {
+  l[sapply(l, is.null)] <- NULL
+  if (length(l) == 0) { return(NULL) }
+  return(l)
+}

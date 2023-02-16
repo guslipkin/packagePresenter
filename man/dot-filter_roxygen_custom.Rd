@@ -8,8 +8,6 @@
 }
 \arguments{
 \item{p}{A list of roxygen2 blocks}
-
-\item{slides}{}
 }
 \value{
 A list of roxygen2 blocks

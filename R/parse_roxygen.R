@@ -49,7 +49,7 @@
 #' @param exported A boolean if you want exported or non-exported functions
 #'   returned
 #'
-#' @return A list of roxygen2 blocks
+#' @inherit .get_roxygen return
 #' @keywords internal
 .filter_roxygen_exported <- function(p, exported = TRUE) {
   p <- lapply(p, \(p) {
@@ -57,8 +57,8 @@
     if (exported & p_exported) { return(p) }
     else if (!exported & !p_exported) { return(p) }
     return(NULL)
-  })
-  p[sapply(p, is.null)] <- NULL
+  }) |>
+    .drop_null_from_list()
 
   return(p)
 }
@@ -117,8 +117,7 @@
 
 #' Title
 #'
-#' @param p A list of roxygen2 blocks
-#' @param slides
+#' @inheritParams .choose_slides
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
