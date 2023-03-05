@@ -15,19 +15,10 @@
 #' @return This function creates and renders a .qmd presentation but does not
 #'   return an R object.
 #' @export
-create_presentation <- function(package = getwd(), file = "") {
+build_presentation <- function(package = NULL, file = NULL) {
 
-  if (file == "") {
-    package_name <- .get_file_from_path(package)
-    file <- package_name
-  }
-
-  if (grepl("\\.qmd$", file)) {
-    file.create(file)
-  } else {
-    file <- paste0(file, ".qmd")
-    file.create(file)
-  }
+  package <- .find_package(package)
+  file <- .find_file(package, file)
 
   yaml <- .parse_yaml(package)
 
@@ -52,12 +43,46 @@ create_presentation <- function(package = getwd(), file = "") {
     function_contents
   )
 
+  print(file)
+  file.create(file)
   fileConn <- file(file)
   writeLines(file_contents, fileConn)
   close(fileConn)
 
   quarto::quarto_render(file)
 
+}
+
+.find_file <- function(package, file) {
+  if (is.null(file)) {
+    file <- .get_file_from_path(package)
+  }
+
+  if (!grepl("\\.qmd$", file)) {
+    file <- paste0(file, ".qmd")
+  }
+
+  file <- glue::glue("{getwd()}/{file}")
+
+  return(file)
+}
+
+.find_package <- function(package) {
+  if (is.null(package)) {
+    package <- getwd()
+    return(package)
+  }
+
+  source_path <- tempdir()
+  utils::download.packages(package, source_path)
+  source_name <-
+    list.files(source_path, pattern = glue::glue("{package}.*\\.tar\\.gz"))
+  utils::untar(
+    glue::glue("{source_path}/{source_name}"),
+    exdir = glue::glue("{source_path}")
+  )
+  package <- glue::glue("{source_path}/{package}")
+  return(package)
 }
 
 # package <- "/Users/guslipkin/Documents/GitHub/pkgslides"

@@ -1,6 +1,6 @@
 #' Title
 #'
-#' @inheritParams create_presentation
+#' @inheritParams build_presentation
 #'
 #' @return A list of roxygen2 properties for the package's DESCRIPTION file used
 #'   to create the package description slide

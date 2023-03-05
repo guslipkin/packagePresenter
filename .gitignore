@@ -148,3 +148,5 @@ dmypy.json
 .RData
 .Rhistory
 docs/CNAME
+*.qmd
+*.html
