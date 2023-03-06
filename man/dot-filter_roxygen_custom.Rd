@@ -4,10 +4,12 @@
 \alias{.filter_roxygen_custom}
 \title{Title}
 \usage{
-.filter_roxygen_custom(p, layout)
+.filter_roxygen_custom(p, chosen)
 }
 \arguments{
 \item{p}{A list of roxygen2 blocks}
+
+\item{chosen}{A vector of the chosen functions or dataset names}
 }
 \value{
 A list of roxygen2 blocks

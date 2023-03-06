@@ -49,10 +49,3 @@
 .inherit_dot_params <- function(inherit, p) {
 
 }
-
-i <- 1
-
-for(n in 1:10) {
-  i <- i + n
-}
-i

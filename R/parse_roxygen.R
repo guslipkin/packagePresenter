@@ -7,10 +7,27 @@
 #' @return A list of roxygen2 blocks
 #' @keywords internal
 .get_roxygen <- function(package, yaml) {
+  p <- roxygen2::parse_package(package)
+
+  type <-
+    vapply(p, \(x) { class(x$object)[1] }, FUN.VALUE = "character")
+
   p <-
-    roxygen2::parse_package(package) |>
-    .organize_functions() |>
-    .choose_slides(yaml$layout)
+    list(
+      "functions" = p[which(type == "function")],
+      "datasets" = p[which(type == "data")]
+    )
+
+  p$functions <-
+    p$functions |>
+    .choose_functions(yaml$functions) |>
+    .organize_functions()
+
+  p$datasets <-
+    p$datasets |>
+    .choose_datasets(yaml$datasets) |>
+    .organize_datasets()
+
   return(p)
 }
 
@@ -70,18 +87,18 @@
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
-.choose_slides <- function(p, layout) {
-  if (is.atomic(layout) & length(layout) == 1) {
-    if (layout == "auto") {
+.choose_functions <- function(p, functions) {
+  if (is.atomic(functions) & length(functions) == 1) {
+    if (functions == "auto") {
       p <- .filter_roxygen_auto(p)
-    } else if (layout == "exported") {
+    } else if (functions == "exported") {
       p <- .filter_roxygen_exported(p)
-    } else if (layout == "all") {
+    } else if (functions == "all") {
       # p already is all
     }
   } else {
     p <-
-      .filter_roxygen_custom(p, layout) |>
+      .filter_roxygen_custom(p, functions) |>
       unlist(recursive = FALSE) |>
       unname()
   }
@@ -117,16 +134,17 @@
 
 #' Title
 #'
-#' @inheritParams .choose_slides
+#' @param p A list of roxygen2 blocks
+#' @param chosen A vector of the chosen functions or dataset names
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
-.filter_roxygen_custom <- function(p, layout) {
+.filter_roxygen_custom <- function(p, chosen) {
   package_files <-
     vapply(p, \(p) .get_file_from_path(p$file), FUN.VALUE = "character")
   yaml_files <-
-    vapply(layout, \(s) s$file, FUN.VALUE = "character")
-  yaml_slides <- sapply(layout, \(s) {
+    vapply(chosen, \(s) s$file, FUN.VALUE = "character")
+  yaml_slides <- sapply(chosen, \(s) {
     if (is.null(s$slides)) { return("all") }
     return(s$slides)
     }) |>
@@ -178,5 +196,32 @@
 .filter_roxygen_blocks <- function(p, y_names) {
   file <- sapply(p, \(p) .get_file_from_path(p$file))
   p <- p[which(file %in% y_names)]
+  return(p)
+}
+
+.choose_datasets <- function(p, datasets) {
+  if (is.atomic(datasets) & length(datasets) == 1) {
+    if (datasets == "none") {
+      p <- NULL
+    } else if (datasets == "all") {
+      # p already is all
+    }
+  } else {
+    p <-
+      .filter_roxygen_custom(p, datasets) |>
+      unlist(recursive = FALSE) |>
+      unname()
+  }
+
+  return(p)
+}
+
+.organize_datasets <- function(p) {
+  data_order <-
+    vapply(p, \(x) { x$call }, FUN.VALUE = "character") |>
+    order()
+
+  p <- p[data_order]
+
   return(p)
 }

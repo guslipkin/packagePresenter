@@ -1,17 +1,12 @@
 #' Title
 #'
-#' @param file A file path
+#' @param functions A list of roxygen2 blocks for functions
 #' @param yaml A list of properties from `.parse_yaml()`
 #'
 #' @return A list of details ready to be collated into slides
 #' @keywords internal
-.get_functions <- function(package, yaml) {
-  # file <- paste0(r_files, "/", package_functions)[4]
-  # f <- roxygen2::parse_file(file)
-  function_contents <-
-    .get_roxygen(package, yaml) |>
-    lapply(.get_tag_list, yaml)
-  return(function_contents)
+.get_functions <- function(functions, yaml) {
+  lapply(functions, .get_function_tags, yaml)
 }
 
 #' Gets a List of Roxygen2 Tags
@@ -21,15 +16,13 @@
 #'
 #' @return A list of roxygen2 tags for a specific source file
 #' @keywords internal
-.get_tag_list <- function(block, yaml) {
+.get_function_tags <- function(block, yaml) {
   topic <- block$object$topic
   file <- .get_file_from_path(block$file)
   title <- .get_tag(block, "title")
   description <- .get_tag(block, "description")
   return <- .get_tag(block, c("return", "returns"))
   examples <- .get_tag(block, "examples")
-
-  c("description", "returns", "parameters", "examples", "code",  "tests")
 
   param <-
     roxygen2::block_get_tags(block, "param") |>
@@ -59,9 +52,9 @@
       "code" = code
     )
   function_details_yaml <- mapply(
-    .drop_function_options,
+    .drop_options,
     function_details_yaml, names(function_details_yaml),
-    MoreArgs = list(yaml)
+    MoreArgs = list(yaml, "functions")
     ) |>
     `names<-`(names(function_details_yaml))
   function_details <-
@@ -72,31 +65,7 @@
 
 #' Title
 #'
-#' @param block A roxygen2 block
-#' @param tag A character vector of roxygen2 block tag names
-#'
-#' @return Returns the raw text of the desired tag
-#' @keywords internal
-.get_tag <- function(block, tag) {
-  roxygen2::block_get_tag_value(block, tag)
-}
-
-#' Title
-#'
-#' @param item A list item from `.get_tag_list`
-#' @param item_name The name of a list item from `.get_tag_list`
-#' @param yaml A list of properties from `.parse_yaml()`
-#'
-#' @return Either `item` or `NULL`
-#' @keywords internal
-.drop_function_options <- function(item, item_name, yaml) {
-  if (yaml$format$functions[[item_name]]) { return(item) }
-  return(NULL)
-}
-
-#' Title
-#'
-#' @param function_details A list of function details from `.get_tag_list`
+#' @param function_details A list of function details from `.get_function_tags`
 #'
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
@@ -144,7 +113,7 @@
   function_details$examples <- .collate_slide(
     "\n\n## Examples",
     function_details$examples,
-    "```{r}\n#| echo: true{{content}\n```"
+    "```{r}\n#| echo: true\n{{content}\n```"
     )
 
   function_details$code <- .collate_slide(
@@ -162,35 +131,6 @@
   return(function_contents)
 }
 
-#' Collates a Slide with a Header and Content
-#'
-#' @param header A length-one character vector. These usually start with
-#'   `\\n\\n##`
-#' @param content A length-one character vector with the function_details for
-#'   the slide
-#' @param string A length-one character vector formatted to be used in
-#'   `glue::glue(string, .open = "\{\{")` where the object being replaced is
-#'   `content`. This is done to avoid needing to reach outside the function
-#'   environment to access `content`.
-#' @param fit A logical if `r-fit-text` should be applied to the content
-#'   supplied
-#'
-#' @return A length-two character vector
-#' @keywords internal
-.collate_slide <- function(header, content, string = "{{content}", fit = TRUE) {
-  if (is.null(content)) { return("") }
-
-  string <- glue::glue(string, .open = "{{")
-
-  if (fit) { string <- .fit_content(string) }
-
-  content <- c(
-    header,
-    string
-  )
-  return(content)
-}
-
 #' Title
 #'
 #' @param param A function parameter from an roxygen2 tag
@@ -199,7 +139,11 @@
 #'   list for writing to a file
 #' @keywords internal
 .process_params <- function(param) {
-  if (is.null(param)) { return(NULL) }
+  if (is.null(param)) {
+    return(NULL)
+  } else if (!all(sapply(param, is.list))) {
+    param <- list(param)
+  }
   sapply(param, \(p) {
     glue::glue("- `{p$name}`: {p$param_description}")
   }) |>

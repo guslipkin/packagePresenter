@@ -30,17 +30,25 @@ build_presentation <- function(package = NULL, file = NULL) {
     .get_description(package) |>
     .collate_description()
 
+  contents <- .get_roxygen(package, yaml)
+
   r_files <- paste0(package, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
   function_contents <-
-    .get_functions(package, yaml) |>
+    .get_functions(contents$functions, yaml) |>
     lapply(.collate_functions) |>
+    unlist()
+
+  data_contents <-
+    .get_datasets(contents$datasets, yaml) |>
+    lapply(.collate_datasets) |>
     unlist()
 
   file_contents <- c(
     title_contents,
     package_contents,
-    function_contents
+    function_contents,
+    data_contents
   )
 
   print(file)
@@ -71,6 +79,8 @@ build_presentation <- function(package = NULL, file = NULL) {
   if (is.null(package)) {
     package <- getwd()
     return(package)
+  } else if (dir.exists(package)) {
+    return(package)
   }
 
   source_path <- tempdir()
@@ -85,6 +95,6 @@ build_presentation <- function(package = NULL, file = NULL) {
   return(package)
 }
 
-# package <- "/Users/guslipkin/Documents/GitHub/pkgslides"
+# package <- "/Users/guslipkin/Documents/GitHub/palmerpenguins"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
-# create_presentation(package)
+# build_presentation(package)

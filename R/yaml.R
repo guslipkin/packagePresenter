@@ -24,20 +24,43 @@
 #' @return A list representing a yaml file
 #' @keywords internal
 .check_yaml <- function(yaml) {
-  if (is.null(yaml$layout)) { yaml$layout <- "auto" }
+  if (is.null(yaml$functions)) { yaml$functions <- "auto" }
+
+  if (is.null(yaml$datasets)) { yaml$datasets <- "all" }
 
   if (is.null(yaml$format$theme)) { yaml$format$theme <- "default" }
 
-  # adds any missing function options as TRUE
-  all_options <-
-    c("description", "returns", "parameters", "examples", "code",  "tests")
-  requested <- names(yaml$format$functions)
-  not_specified <- all_options[!(all_options %in% requested)]
+  yaml <-
+    yaml |>
+    .set_as_true(
+      "functions",
+      c("description", "returns", "parameters",
+        "examples", "code",  "tests")
+    ) |>
+    .set_as_true(
+      "datasets",
+      c("format", "source", "references")
+    )
 
-  yaml$format$functions <-
+  return(yaml)
+}
+
+#' Title
+#'
+#' @param yaml A yaml file as a list
+#' @param type "functions" or "datasets"
+#' @param options A vector of the options exposed to users in the yaml format
+#'
+#' @return A yaml where non-included options are set to TRUE
+#' @keywords internal
+.set_as_true <- function(yaml, type, options) {
+  requested <- names(yaml$format[[type]])
+  not_specified <- options[!(options %in% requested)]
+
+  yaml$format[[type]] <-
     lapply(seq_along(not_specified), \(s) TRUE) |>
     `names<-`(not_specified) |>
-    append(yaml$format$functions)
+    append(yaml$format[[type]])
 
   return(yaml)
 }

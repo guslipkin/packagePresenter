@@ -34,6 +34,7 @@
     "    theme: {yaml$format$theme}",
     "    navigation-mode: vertical",
     "    self-contained: true",
+    "    scrollable: true",
     "---",
     .sep = "\n"
   )

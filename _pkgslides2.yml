@@ -3,4 +3,4 @@ format:
   functions:
     tests: false
 
-layout: all
+functions: all
