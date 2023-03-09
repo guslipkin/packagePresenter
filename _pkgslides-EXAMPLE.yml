@@ -2,14 +2,14 @@ format:
   theme: default
   functions:
     parameters: {true, false}
-    examples: {true, false}
+    examples: {true, false} # target package must be installed to evaluate
     code: {true, false}
     tests: {true, false}
   datasets:
     format: {true, false}
     source: {true, false}
     references: {true, false}
-    view: {true, false}
+    # view: {true, false} currently unsupported
 
 functions:
   - file: source1.R # will only include functions in slides

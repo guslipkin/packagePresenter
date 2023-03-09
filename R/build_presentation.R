@@ -20,6 +20,10 @@ build_presentation <- function(package = NULL, file = NULL) {
   package <- .find_package(package)
   file <- .find_file(package, file)
 
+  if (rev(strsplit(package, "/")[[1]])[1] %in% rownames(utils::installed.packages())) {
+    chunk_opt <- "echo"
+  } else { chunk_opt <- "eval" }
+
   yaml <- .parse_yaml(package)
 
   title_contents <-
@@ -28,7 +32,7 @@ build_presentation <- function(package = NULL, file = NULL) {
 
   package_contents <-
     .get_description(package) |>
-    .collate_description()
+    .collate_description(chunk_opt)
 
   contents <- .get_roxygen(package, yaml)
 
@@ -36,7 +40,7 @@ build_presentation <- function(package = NULL, file = NULL) {
   package_functions <- list.files(r_files, pattern = "\\.R$")
   function_contents <-
     .get_functions(contents$functions, yaml) |>
-    lapply(.collate_functions) |>
+    lapply(.collate_functions, chunk_opt) |>
     unlist()
 
   data_contents <-
@@ -61,6 +65,13 @@ build_presentation <- function(package = NULL, file = NULL) {
 
 }
 
+#' Title
+#'
+#' @param package A path to a package source
+#' @param file A file path
+#'
+#' @return A file path to write the .qmd to
+#' @keywords internal
 .find_file <- function(package, file) {
   if (is.null(file)) {
     file <- .get_file_from_path(package)
@@ -75,6 +86,12 @@ build_presentation <- function(package = NULL, file = NULL) {
   return(file)
 }
 
+#' Title
+#'
+#' @param package A package name or file path to a package source
+#'
+#' @return A path to a package source
+#' @keywords internal
 .find_package <- function(package) {
   if (is.null(package)) {
     package <- getwd()

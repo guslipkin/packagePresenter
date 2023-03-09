@@ -4,7 +4,7 @@
 \alias{.collate_description}
 \title{Title}
 \usage{
-.collate_description(package_details)
+.collate_description(package_details, chunk_opt)
 }
 \arguments{
 \item{package_details}{A list of function details from `.get_description`}

@@ -83,7 +83,7 @@
 #' Title
 #'
 #' @param p A list of roxygen2 blocks
-#' @param slides A list from `_pkgslides.yml`
+#' @param functions A list from `_pkgslides.yml`
 #'
 #' @return A list of roxygen2 blocks
 #' @keywords internal
@@ -199,6 +199,13 @@
   return(p)
 }
 
+#' Title
+#'
+#' @param p A list of roxygen2 blocks
+#' @param datasets A list from `_pkgslides.yml`
+#'
+#' @return A list of r
+#' @keywords internal
 .choose_datasets <- function(p, datasets) {
   if (is.atomic(datasets) & length(datasets) == 1) {
     if (datasets == "none") {
@@ -216,6 +223,12 @@
   return(p)
 }
 
+#' Title
+#'
+#' @param p A list of roxygen2 blocks
+#'
+#' @return A list of roxygen2 blocks
+#' @keywords internal
 .organize_datasets <- function(p) {
   data_order <-
     vapply(p, \(x) { x$call }, FUN.VALUE = "character") |>

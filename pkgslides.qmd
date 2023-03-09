@@ -93,7 +93,7 @@ folder.
 
 
 
-# Title
+# `.set_as_true`
 
 ::: {.r-fit-text}
 
@@ -116,7 +116,7 @@ folder.
 
 
 
-# Title
+# `.get_title`
 
 ::: {.r-fit-text}
 
@@ -138,7 +138,7 @@ to create the title slide
 
 
 
-# Title
+# `.collate_title`
 
 ::: {.r-fit-text}
 

@@ -39,7 +39,7 @@
     ) |>
     .set_as_true(
       "datasets",
-      c("format", "source", "references")
+      c("format", "source", "references", "view")
     )
 
   return(yaml)

@@ -69,7 +69,11 @@
 #'
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
-.collate_functions <- function(function_details) {
+.collate_functions <- function(function_details, chunk_opt) {
+  if (function_details$title == "Title") {
+    function_details$title <- glue::glue("`{function_details$topic}`")
+  }
+
   function_details$topic <- .collate_slide(
     "- **Topic:** ",
     function_details$topic,
@@ -110,10 +114,15 @@
     .process_params(function_details$parameters)
     )
 
+  if (chunk_opt == "echo") {
+    chunk_opt <- glue::glue("#| {chunk_opt}: true")
+  } else if (chunk_opt == "eval") {
+    chunk_opt <- glue::glue("#| {chunk_opt}: false\n#| echo: true")
+  }
   function_details$examples <- .collate_slide(
     "\n\n## Examples",
     function_details$examples,
-    "```{r}\n#| echo: true\n{{content}\n```"
+    glue::glue("```{r}\n[chunk_opt}\n{{content}\n```", .open = "[")
     )
 
   function_details$code <- .collate_slide(
