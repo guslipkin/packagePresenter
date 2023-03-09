@@ -4,15 +4,55 @@
 \alias{create_yaml}
 \title{Create `_pkgslides.yml`}
 \usage{
-create_yaml(package)
+create_yaml(
+  path = ".",
+  format_theme = c(),
+  format_functions = list(),
+  format_datasets = list(),
+  choose_functions = c(),
+  choose_datasets = c()
+)
 }
 \arguments{
-\item{package}{A file path to the root directory of an R package source
-folder.}
+\item{path}{A file path to where you want the yaml file written. This should
+not end in a slash of any kind.}
+
+\item{format_theme}{A length-one character vector of theme details}
+
+\item{format_functions}{A named list of format function options}
+
+\item{format_datasets}{A named list of format dataset options}
+
+\item{choose_functions}{A vector of function names}
+
+\item{choose_datasets}{A vector of dataset names}
 }
 \value{
 This will not fill the file, simply create it.
 }
 \description{
 Create `_pkgslides.yml`
+}
+\examples{
+# NOT RUN
+# To create a yaml like this for the palmerpenguins package
+# YAML
+# ----
+# format:
+#   theme: default
+#   functions:
+#     tests: false
+#
+# functions: all
+#
+# datasets:
+#   - penguins
+#
+# R:
+# ----
+# create_yaml(
+#   "palmerpenguins",
+#   format_functions = list(tests = FALSE),
+#   choose_datasets = c("penguins")
+# )
 }

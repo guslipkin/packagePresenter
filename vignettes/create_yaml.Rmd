@@ -1,0 +1,122 @@
+---
+title: "Create _pkgslides.yml"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Create _pkgslides.yml}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pkgslides)
+```
+
+`_pkgslides.yml` is at the core of `pkgslides` and is used to customize your presentation exactly how you want it.
+
+We provide `create_yaml()` as an interface to get you started, or you can create one from scratch. We generally recommend using `create_yaml()` for packages you may not have already while you can use an existing file for packages you built or keep source code for. Of course, for the second option, you can always create the file with `create_yaml()`.
+
+## Creating `_pkgslides.yml` for [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/)
+
+Let's first check to see what `palmerpenguins` exports.
+
+```{r}
+library(palmerpenguins)
+ls("package:palmerpenguins")
+```
+
+We see that it has three exports. The first, `path_to_file` is a function, while `penguins` and `penguins_raw` are both datasets.
+
+### Example 1
+
+Let's say we want to include everything that is exported by `palmerpenguins`. For each function we want a description of what it does, what it returns, and what parameters it takes. For each dataset we want to know what format the data is in and what sources it came from. We'll leave the theme as-is for now.
+
+We don't actually need to include any lines that are `TRUE` as that is the default case, but we'll leave it in for now for the sake of clarity.
+
+```{yaml}
+format:
+  theme: default
+  functions:
+    description: TRUE
+    returns: TRUE
+    parameters: TRUE
+    examples: FALSE
+    code: FALSE
+    tests: FALSE
+  datasets:
+    format: TRUE
+    source: TRUE
+    references: FALSE
+
+functions: all
+datasets: all
+```
+
+```{r}
+create_yaml()
+```
+
+
+## All Options
+
+Any line listed with curly braces such as `{true, false}` mean that one and only one of those options should be chosen.
+
+For the sake of example, generic names have been used for source files, function names, and dataset names.
+
+```{yaml}
+format:
+  theme: default
+  functions:
+    parameters: {true, false}
+    examples: {true, false} # target package must be installed to evaluate
+    code: {true, false}
+    tests: {true, false}
+  datasets:
+    format: {true, false}
+    source: {true, false}
+    references: {true, false}
+    # view: {true, false} currently unsupported
+
+functions:
+  - file: source1.R # will only include functions in slides
+    slides:
+      - function1
+      - function2
+  - file: source2.R # will include all functions
+  - file: source3.R
+    slides: auto
+
+datasets:
+  - dataset1
+  - dataset2
+
+---
+
+# Other options
+
+format:
+  # lack of `functions:`
+# Excluding the `functions:` section is the same as setting all slides to 'true'. 
+#   This will show all slides for which content exists.
+
+format:
+  theme: {default, ...}
+# see https://quarto.org/docs/presentations/revealjs/themes.html#using-themes
+# this is passed directly to the quarto document
+
+functions: {auto, exported, all, none}
+# 'auto' uses exported functions and internal functions in the same file as an 
+#   exported function
+# 'exported' uses only exported functions
+# 'all' The default behavior, but should be there if the yml file exists
+
+datasets: {all, none}
+# 'all' The default behavior, but should be there if the yml file exists
+# 'none' No datasets will be included
+```

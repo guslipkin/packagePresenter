@@ -11,20 +11,23 @@
 #'   folder.
 #' @param file The file name for your .qmd file. This can be a path so long as
 #'   it ends with a `file_name.qmd`
+#' @param yaml A `_pkgslides.yml` file or function call to `create_yaml()`
 #'
 #' @return This function creates and renders a .qmd presentation but does not
 #'   return an R object.
 #' @export
-build_presentation <- function(package = NULL, file = NULL) {
+build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()) {
 
   package <- .find_package(package)
   file <- .find_file(package, file)
 
+  if (file.exists(glue::glue("{package}/_pkgslides.yml"))) {
+    yaml <- .parse_yaml(package)
+  }
+
   if (rev(strsplit(package, "/")[[1]])[1] %in% rownames(utils::installed.packages())) {
     chunk_opt <- "echo"
   } else { chunk_opt <- "eval" }
-
-  yaml <- .parse_yaml(package)
 
   title_contents <-
     .get_title(package) |>

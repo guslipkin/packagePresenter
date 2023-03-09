@@ -4,7 +4,7 @@
 \alias{build_presentation}
 \title{Create a Revealjs Presentation with Quarto}
 \usage{
-build_presentation(package = NULL, file = NULL)
+build_presentation(package = NULL, file = NULL, yaml = create_yaml())
 }
 \arguments{
 \item{package}{A file path to the root directory of an R package source
@@ -12,6 +12,8 @@ folder.}
 
 \item{file}{The file name for your .qmd file. This can be a path so long as
 it ends with a `file_name.qmd`}
+
+\item{yaml}{A `_pkgslides.yml` file or function call to `create_yaml()`}
 }
 \value{
 This function creates and renders a .qmd presentation but does not

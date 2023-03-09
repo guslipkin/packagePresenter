@@ -1,14 +1,16 @@
+functions: auto
+datasets: all
 format:
   theme: default
   functions:
-    tests: false
-    code: false
-
-functions:
-  - file: yaml.R
-    slides: auto
-  - file: build_title.R # will only include functions in slides
-    slides:
-      - .get_title
-      - .collate_title
-  - file: create_presentation.R # will include all functions
+    description: yes
+    returns: yes
+    parameters: yes
+    examples: yes
+    code: yes
+    tests: yes
+  datasets:
+    format: yes
+    source: yes
+    references: yes
+    view: yes
