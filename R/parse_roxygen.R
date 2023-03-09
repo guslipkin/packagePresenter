@@ -207,17 +207,15 @@
 #' @return A list of r
 #' @keywords internal
 .choose_datasets <- function(p, datasets) {
-  if (is.atomic(datasets) & length(datasets) == 1) {
+  if (length(datasets) == 1 && datasets %in% c("all", "none")) {
     if (datasets == "none") {
       p <- NULL
     } else if (datasets == "all") {
       # p already is all
     }
   } else {
-    p <-
-      .filter_roxygen_custom(p, datasets) |>
-      unlist(recursive = FALSE) |>
-      unname()
+    topics <- sapply(p, \(b) { b$object$topic })
+    p <- p[which(topics %in% datasets)]
   }
 
   return(p)
