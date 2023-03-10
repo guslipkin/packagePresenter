@@ -1171,7 +1171,12 @@ margin-right: 0; }
 <h2>Parameters</h2>
 <div class="r-fit-text">
 <ul>
-<li><code>package</code>: A file path to the root directory of an R package source folder.</li>
+<li><code>path</code>: A file path to where you want the yaml file written. This should not end in a slash of any kind.</li>
+<li><code>format_theme</code>: A length-one character vector of theme details</li>
+<li><code>format_functions</code>: A named list of format function options</li>
+<li><code>format_datasets</code>: A named list of format dataset options</li>
+<li><code>choose_functions</code>: A vector of function names</li>
+<li><code>choose_datasets</code>: A vector of dataset names</li>
 </ul>
 </div>
 </section></section>
@@ -1263,6 +1268,64 @@ margin-right: 0; }
 <ul>
 <li><code>package_details</code>: A list of function details from <code>.get_title</code></li>
 <li><code>yaml</code>: A list of properties from <code>.parse_yaml()</code></li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="create-a-revealjs-presentation-with-quarto" class="title-slide slide level1 center">
+<h1>Create a Revealjs Presentation with Quarto</h1>
+<div class="r-fit-text">
+<ul>
+<li><p><strong>Topic:</strong> <code>build_presentation</code></p></li>
+<li><p><strong>Description:</strong> When pointed at the root directory of an R Package Project, this function will automatically generate and render a Quarto/Revealjs presentation for that package. It will have a title slide and description slide generated from the package’s DESCRIPTION file and each exported function will have slides with its description and returns, parameters, examples, and source code.</p></li>
+<li><p><strong>Return:</strong> This function creates and renders a .qmd presentation but does not return an R object.</p></li>
+</ul>
+</div>
+</section>
+<section id="parameters-6" class="slide level2">
+<h2>Parameters</h2>
+<div class="r-fit-text">
+<ul>
+<li><code>package</code>: A file path to the root directory of an R package source folder.</li>
+<li><code>file</code>: The file name for your .qmd file. This can be a path so long as it ends with a <code>file_name.qmd</code></li>
+<li><code>yaml</code>: A <code>_pkgslides.yml</code> file or function call to <code>create_yaml()</code></li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="find_file" class="title-slide slide level1 center">
+<h1><code>.find_file</code></h1>
+<div class="r-fit-text">
+<ul>
+<li><p><strong>Topic:</strong> <code>.find_file</code></p></li>
+<li><p><strong>Return:</strong> A file path to write the .qmd to</p></li>
+</ul>
+</div>
+</section>
+<section id="parameters-7" class="slide level2">
+<h2>Parameters</h2>
+<div class="r-fit-text">
+<ul>
+<li><code>package</code>: A path to a package source</li>
+<li><code>file</code>: A file path</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="find_package" class="title-slide slide level1 center">
+<h1><code>.find_package</code></h1>
+<div class="r-fit-text">
+<ul>
+<li><p><strong>Topic:</strong> <code>.find_package</code></p></li>
+<li><p><strong>Return:</strong> A path to a package source</p></li>
+</ul>
+</div>
+</section>
+<section id="parameters-8" class="slide level2">
+<h2>Parameters</h2>
+<div class="r-fit-text">
+<ul>
+<li><code>package</code>: A package name or file path to a package source</li>
 </ul>
 </div>
 <div class="footer footer-default">

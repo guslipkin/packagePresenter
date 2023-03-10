@@ -14,15 +14,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(pkgslides)
-```
-
 `_pkgslides.yml` is at the core of `pkgslides` and is used to customize your presentation exactly how you want it.
 
 We provide `create_yaml()` as an interface to get you started, or you can create one from scratch. We generally recommend using `create_yaml()` for packages you may not have already while you can use an existing file for packages you built or keep source code for. Of course, for the second option, you can always create the file with `create_yaml()`.
 
-## Creating `_pkgslides.yml` for [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/)
+## Creating `_pkgslides.yml`
+
+Before we get started with any examples, let's load `pkgslides`.
+
+```{r setup}
+library(pkgslides)
+```
+
+### Example 1: [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/)
 
 Let's first check to see what `palmerpenguins` exports.
 
@@ -33,13 +37,11 @@ ls("package:palmerpenguins")
 
 We see that it has three exports. The first, `path_to_file` is a function, while `penguins` and `penguins_raw` are both datasets.
 
-### Example 1
-
 Let's say we want to include everything that is exported by `palmerpenguins`. For each function we want a description of what it does, what it returns, and what parameters it takes. For each dataset we want to know what format the data is in and what sources it came from. We'll leave the theme as-is for now.
 
 We don't actually need to include any lines that are `TRUE` as that is the default case, but we'll leave it in for now for the sake of clarity.
 
-```{yaml}
+```{.yaml}
 format:
   theme: default
   functions:
@@ -48,20 +50,98 @@ format:
     parameters: TRUE
     examples: FALSE
     code: FALSE
-    tests: FALSE
   datasets:
     format: TRUE
     source: TRUE
     references: FALSE
-
 functions: all
 datasets: all
 ```
 
+One extra thing to be aware of when using `create_yaml()` is that we need to provide a folder path for `_pkgslides.yml` to live at. For now, we'll create it in our current working directory, represented by `"."`. Like above, we're going to explicitly declare all of our options, even if we want the default case.
+
 ```{r}
-create_yaml()
+create_yaml(
+  path = ".",
+  format_theme = c("default"),
+  format_functions = list(
+    description = TRUE,
+    returns = TRUE,
+    parameters = TRUE,
+    examples = FALSE,
+    code = FALSE
+  ),
+  format_datasets = list(
+    format = TRUE,
+    source = TRUE,
+    references = TRUE
+  ),
+  choose_functions = c("all"),
+  choose_datasets = c("all")
+)
 ```
 
+We can then double check our new yaml file. We pull in the file with `yaml::read_yaml()` then convert the list into a string with `yaml::as.yaml()`. Finally, we print with formatting with `cat()`. You may notice that our `TRUE` and `FALSE` choices have been replaced with`yes` and `no`. As it turns out, yaml files accept both as valid options. You may also notice that while the sections may not be in the same order, they retain the same tree structure. Other than that, our generated `_pkgslides.yml` is the same as the one we made by hand.
+
+```{r}
+yaml::read_yaml("_pkgslides.yml") |> 
+  yaml::as.yaml() |> 
+  cat()
+```
+
+```{r include=FALSE}
+file.remove("_pkgslides.yml")
+```
+
+### Example 2: `pkgslides`
+
+This example generates a `pkgslides` presentation for itself. We don't need any source code, but want the rest of the function slides. We also specify that we want to automatically choose slides from `yaml.R` which will include all functions. The `auto` option produces slides for internal functions only if they are in the same file as an exported function. Thus, when used on a single file, it produces the same result as `all`. We then specify that we only want the `.get_title()` and `.collate_title()` functions from `build_title.R` and all functions from `build_presentation.R`.
+
+```{yaml}
+format:
+  functions:
+    code: false
+functions:
+  - file: yaml.R
+    slides: auto
+  - file: build_title.R # will only include functions in slides
+    slides:
+      - .get_title
+      - .collate_title
+  - file: build_presentation.R # will include all functions
+```
+
+Like in Example 1, we're going to generate `_pkgslides.yml` in our current working directory with `"."`, but since that's the default, we won't specify it.
+
+```{r}
+create_yaml(
+  format_functions = list(
+    code = FALSE
+  ),
+  format_datasets = list(
+    format = TRUE,
+    source = TRUE,
+    references = TRUE
+  ),
+  choose_functions = list(
+    "yaml.R" = "auto",
+    "build_title.R" = c(".get_title", ".collate_title"),
+    "build_presentation.R"
+  )
+)
+```
+
+Again, we can check our file and see that while the formatting is slightly different, it yields the same data.
+
+```{r}
+yaml::read_yaml("_pkgslides.yml") |> 
+  yaml::as.yaml() |> 
+  cat()
+```
+
+```{r include=FALSE}
+file.remove("_pkgslides.yml")
+```
 
 ## All Options
 
@@ -69,14 +149,14 @@ Any line listed with curly braces such as `{true, false}` mean that one and only
 
 For the sake of example, generic names have been used for source files, function names, and dataset names.
 
-```{yaml}
+```{.yaml}
 format:
   theme: default
   functions:
     parameters: {true, false}
     examples: {true, false} # target package must be installed to evaluate
     code: {true, false}
-    tests: {true, false}
+    # tests: {true, false} currently unsupported
   datasets:
     format: {true, false}
     source: {true, false}
@@ -120,3 +200,4 @@ datasets: {all, none}
 # 'all' The default behavior, but should be there if the yml file exists
 # 'none' No datasets will be included
 ```
+

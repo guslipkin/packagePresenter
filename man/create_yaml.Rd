@@ -33,26 +33,3 @@ This will not fill the file, simply create it.
 \description{
 Create `_pkgslides.yml`
 }
-\examples{
-# NOT RUN
-# To create a yaml like this for the palmerpenguins package
-# YAML
-# ----
-# format:
-#   theme: default
-#   functions:
-#     tests: false
-#
-# functions: all
-#
-# datasets:
-#   - penguins
-#
-# R:
-# ----
-# create_yaml(
-#   "palmerpenguins",
-#   format_functions = list(tests = FALSE),
-#   choose_datasets = c("penguins")
-# )
-}

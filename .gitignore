@@ -151,3 +151,4 @@ docs/CNAME
 *.qmd
 *.html
 inst/doc
+vignettes/_pkgslides.yml

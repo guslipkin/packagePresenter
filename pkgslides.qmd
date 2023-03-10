@@ -43,8 +43,13 @@ library(pkgslides)
 
 ::: {.r-fit-text}
 
-- `package`: A file path to the root directory of an R package source
-folder.
+- `path`: A file path to where you want the yaml file written. This should
+not end in a slash of any kind.
+- `format_theme`: A length-one character vector of theme details
+- `format_functions`: A named list of format function options
+- `format_datasets`: A named list of format dataset options
+- `choose_functions`: A vector of function names
+- `choose_datasets`: A vector of dataset names
 
 :::
 
@@ -155,6 +160,82 @@ to create the title slide
 
 - `package_details`: A list of function details from `.get_title`
 - `yaml`: A list of properties from `.parse_yaml()`
+
+:::
+
+
+
+# Create a Revealjs Presentation with Quarto
+
+::: {.r-fit-text}
+
+- **Topic:** `build_presentation`
+
+- **Description:** When pointed at the root directory of an R Package Project, this
+function will automatically generate and render a Quarto/Revealjs
+presentation for that package. It will have a title slide and description
+slide generated from the package's DESCRIPTION file and each exported
+function will have slides with its description and returns, parameters,
+examples, and source code.
+
+- **Return:** This function creates and renders a .qmd presentation but does not
+return an R object.
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `package`: A file path to the root directory of an R package source
+folder.
+- `file`: The file name for your .qmd file. This can be a path so long as
+it ends with a `file_name.qmd`
+- `yaml`: A `_pkgslides.yml` file or function call to `create_yaml()`
+
+:::
+
+
+
+# `.find_file`
+
+::: {.r-fit-text}
+
+- **Topic:** `.find_file`
+
+- **Return:** A file path to write the .qmd to
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `package`: A path to a package source
+- `file`: A file path
+
+:::
+
+
+
+# `.find_package`
+
+::: {.r-fit-text}
+
+- **Topic:** `.find_package`
+
+- **Return:** A path to a package source
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `package`: A package name or file path to a package source
 
 :::
 
