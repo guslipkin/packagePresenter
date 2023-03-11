@@ -61,16 +61,16 @@
 #'
 #' @return A length-two character vector
 #' @keywords internal
-.collate_slide <- function(header, content, string = "{{content}", fit = TRUE) {
+.collate_slide <- function(header, content, string = "{{content}", fit = TRUE, code = FALSE) {
   if (is.null(content)) { return("") }
 
   content <-
     tryCatch(
     {
-      content <-
-        content |>
-        pkgdown::rd2html() |>
-        paste0(collapse = "\n")
+      if (!code) {
+        content <- pkgdown::rd2html(content)
+      }
+      content <- paste0(content, collapse = "\n")
     },
     error = function(cond) {
       message("There's something weird about your documentation. This seems to happen when there is LaTeX written into the roxygen2 blocks.")

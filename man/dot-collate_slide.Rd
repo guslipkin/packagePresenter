@@ -4,7 +4,13 @@
 \alias{.collate_slide}
 \title{Collates a Slide with a Header and Content}
 \usage{
-.collate_slide(header, content, string = "{{content}", fit = TRUE)
+.collate_slide(
+  header,
+  content,
+  string = "{{content}",
+  fit = TRUE,
+  code = FALSE
+)
 }
 \arguments{
 \item{header}{A length-one character vector. These usually start with

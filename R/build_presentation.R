@@ -115,6 +115,6 @@ build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()
   return(package)
 }
 
-# package <- "/Users/guslipkin/Documents/GitHub/palmerpenguins"
+# package <- "/Users/guslipkin/Documents/GitHub/pkgslides"
 # file <- "/Users/guslipkin/Documents/GitHub/packagePresenter/test.qmd"
 # build_presentation(package)

@@ -22,7 +22,7 @@ create_yaml <- function(
   # formatting
   format_theme <- format_theme[format_theme %in% c("theme")]
   format_functions <-
-    format_functions[names(format_functions) %in% c("description", "returns", "parameters", "examples", "code")]
+    format_functions[names(format_functions) %in% c("description", "return", "parameters", "examples", "code")]
   format_datasets <-
     format_datasets[names(format_datasets) %in% c("format", "source", "references")]
 
@@ -38,12 +38,16 @@ create_yaml <- function(
     .append_to_yaml(format_datasets, "datasets")
 
   # print options
-  yaml <- .process_choose_functions(yaml, choose_functions)
+  if (length(choose_functions) > 0) {
+    yaml <- .process_choose_functions(yaml, choose_functions)
+  }
   yaml$datasets <- choose_datasets
 
   yaml |>
     .check_yaml() |>
     yaml::write_yaml(file)
+
+  print(glue::glue("Config written to '{file}'"))
 }
 
 #' Parse `_pkgslides.yml`
@@ -82,7 +86,7 @@ create_yaml <- function(
     yaml |>
     .set_as_true(
       "functions",
-      c("description", "returns", "parameters",
+      c("description", "return", "parameters",
         "examples", "code")
     ) |>
     .set_as_true(

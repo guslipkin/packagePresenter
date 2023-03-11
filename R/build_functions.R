@@ -122,13 +122,15 @@
   function_details$examples <- .collate_slide(
     "\n\n## Examples",
     function_details$examples,
-    glue::glue("```{r}\n[chunk_opt}\n{{content}\n```", .open = "[")
+    glue::glue("```{r}\n[chunk_opt]\n{{content}\n```", .open = "[", .close = "]"),
+    code = TRUE
     )
 
   function_details$code <- .collate_slide(
     glue::glue("\n\n## `{function_details$file}`"),
     function_details$code,
-    "```{.r}\n{{content}\n```"
+    "```{.r}\n{{content}\n```",
+    code = TRUE
     )
 
   function_contents <- c(

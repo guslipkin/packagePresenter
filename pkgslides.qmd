@@ -48,12 +48,46 @@ not end in a slash of any kind.
 - `format_theme`: A length-one character vector of theme details
 - `format_functions`: A named list of format function options
 - `format_datasets`: A named list of format dataset options
-- `choose_functions`: A vector of function names
+- `choose_functions`: A list of file or function names
 - `choose_datasets`: A vector of dataset names
 
 :::
 
 
+## `yaml.R`
+
+::: {.r-fit-text}
+
+```{.r}
+create_yaml <- function(path = ".", format_theme = c(), format_functions = list(), 
+    format_datasets = list(), choose_functions = list(), choose_datasets = c()) {
+    file <- glue::glue("{path}/_pkgslides.yml")
+    stopifnot(!file.exists(file))
+    format_theme <- format_theme[format_theme %in% c("theme")]
+    format_functions <- format_functions[names(format_functions) %in% 
+        c("description", "return", "parameters", "examples", 
+            "code")]
+    format_datasets <- format_datasets[names(format_datasets) %in% 
+        c("format", "source", "references")]
+    .append_to_yaml <- function(yaml, obj, name) {
+        if (length(obj) > 0) {
+            yaml$format[[name]] <- obj
+        }
+        return(yaml)
+    }
+    yaml <- .append_to_yaml(.append_to_yaml(.append_to_yaml(list(), 
+        format_theme, "theme"), format_functions, "functions"), 
+        format_datasets, "datasets")
+    if (length(choose_functions) > 0) {
+        yaml <- .process_choose_functions(yaml, choose_functions)
+    }
+    yaml$datasets <- choose_datasets
+    yaml::write_yaml(.check_yaml(yaml), file)
+    print(glue::glue("Config written to '{file}'"))
+}
+```
+
+:::
 
 # Parse `_pkgslides.yml`
 
@@ -76,6 +110,24 @@ folder.
 :::
 
 
+## `yaml.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.parse_yaml <- function(package) {
+    file <- glue::glue("{package}/_pkgslides.yml")
+    if (file.exists(file)) {
+        yaml <- .check_yaml(yaml::read_yaml(file))
+    }
+    else {
+        yaml <- .check_yaml(list())
+    }
+    return(yaml)
+}
+```
+
+:::
 
 # Fill an Incomplete `_pkgslides.yml`
 
@@ -97,6 +149,29 @@ folder.
 :::
 
 
+## `yaml.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.check_yaml <- function(yaml) {
+    if (is.null(yaml$functions)) {
+        yaml$functions <- "auto"
+    }
+    if (is.null(yaml$datasets)) {
+        yaml$datasets <- "all"
+    }
+    if (is.null(yaml$format$theme)) {
+        yaml$format$theme <- "default"
+    }
+    yaml <- .set_as_true(.set_as_true(yaml, "functions", c("description", 
+        "return", "parameters", "examples", "code")), "datasets", 
+        c("format", "source", "references"))
+    return(yaml)
+}
+```
+
+:::
 
 # `.set_as_true`
 
@@ -120,6 +195,79 @@ folder.
 :::
 
 
+## `yaml.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.set_as_true <- function(yaml, type, options) {
+    requested <- names(yaml$format[[type]])
+    not_specified <- options[!(options %in% requested)]
+    yaml$format[[type]] <- append(`names<-`(lapply(seq_along(not_specified), 
+        function(s) TRUE), not_specified), yaml$format[[type]])
+    return(yaml)
+}
+```
+
+:::
+
+# `.process_choose_functions`
+
+::: {.r-fit-text}
+
+- **Topic:** `.process_choose_functions`
+
+- **Return:** A list representing a yaml file
+
+:::
+
+
+## Parameters
+
+::: {.r-fit-text}
+
+- `yaml`: A list representing a yaml file
+- `choose`: The list passed to `choose_functions` in the `create_yaml`
+function
+
+:::
+
+
+## `yaml.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.process_choose_functions <- function(yaml, choose) {
+    yaml2 <- list()
+    dim <- vapply(choose, length, FUN.VALUE = 1)
+    choose_names <- names(choose)
+    opt_regex <- "^(auto|exported|all)$|\\.R$"
+    if (all(dim == 1) & is.null(choose_names)) {
+        stopifnot(all(grepl(opt_regex, choose)))
+        yaml2$functions <- lapply(choose, function(x) {
+            list(file = x)
+        })
+    }
+    else {
+        if (any(choose_names == "")) {
+            needs_name <- which(choose_names == "" & dim == 1)
+            names(choose)[needs_name] <- unlist(sapply(choose, 
+                unlist)[needs_name])
+            choose[needs_name] <- "all"
+            choose_names <- names(choose)
+        }
+        stopifnot(all(grepl(opt_regex, choose_names)))
+        yaml2$functions <- mapply(function(x, y) {
+            list(file = x, slides = y)
+        }, choose_names, choose, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+    }
+    yaml <- unlist(list(yaml, yaml2), recursive = FALSE)
+    return(yaml)
+}
+```
+
+:::
 
 # `.get_title`
 
@@ -142,6 +290,20 @@ to create the title slide
 :::
 
 
+## `build_title.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.get_title <- function(package) {
+    lib <- .get_desc(package, "Package")
+    version <- .get_desc(package, "Version")
+    title_details <- list(lib = lib, version = version)
+    return(title_details)
+}
+```
+
+:::
 
 # `.collate_title`
 
@@ -164,6 +326,22 @@ to create the title slide
 :::
 
 
+## `build_title.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.collate_title <- function(title_details, yaml) {
+    title_contents <- glue::glue("% Generated by pkgslides: do not edit by hand", 
+        "---", "title: {title_details$lib}", "subtitle: {title_details$version}", 
+        "format:", "  revealjs:", "    theme: {yaml$format$theme}", 
+        "    navigation-mode: vertical", "    self-contained: true", 
+        "    scrollable: true", "---", .sep = "\n")
+    return(title_contents)
+}
+```
+
+:::
 
 # Create a Revealjs Presentation with Quarto
 
@@ -197,6 +375,45 @@ it ends with a `file_name.qmd`
 :::
 
 
+## `build_presentation.R`
+
+::: {.r-fit-text}
+
+```{.r}
+build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()) {
+    package <- .find_package(package)
+    file <- .find_file(package, file)
+    if (file.exists(glue::glue("{package}/_pkgslides.yml"))) {
+        yaml <- .parse_yaml(package)
+    }
+    if (rev(strsplit(package, "/")[[1]])[1] %in% rownames(utils::installed.packages())) {
+        chunk_opt <- "echo"
+    }
+    else {
+        chunk_opt <- "eval"
+    }
+    title_contents <- .collate_title(.get_title(package), yaml)
+    package_contents <- .collate_description(.get_description(package), 
+        chunk_opt)
+    contents <- .get_roxygen(package, yaml)
+    r_files <- paste0(package, "/R")
+    package_functions <- list.files(r_files, pattern = "\\.R$")
+    function_contents <- unlist(lapply(.get_functions(contents$functions, 
+        yaml), .collate_functions, chunk_opt))
+    data_contents <- unlist(lapply(.get_datasets(contents$datasets, 
+        yaml), .collate_datasets))
+    file_contents <- c(title_contents, package_contents, function_contents, 
+        data_contents)
+    print(file)
+    file.create(file)
+    fileConn <- file(file)
+    writeLines(file_contents, fileConn)
+    close(fileConn)
+    quarto::quarto_render(file)
+}
+```
+
+:::
 
 # `.find_file`
 
@@ -219,6 +436,24 @@ it ends with a `file_name.qmd`
 :::
 
 
+## `build_presentation.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.find_file <- function(package, file) {
+    if (is.null(file)) {
+        file <- .get_file_from_path(package)
+    }
+    if (!grepl("\\.qmd$", file)) {
+        file <- paste0(file, ".qmd")
+    }
+    file <- glue::glue("{getwd()}/{file}")
+    return(file)
+}
+```
+
+:::
 
 # `.find_package`
 
@@ -240,3 +475,26 @@ it ends with a `file_name.qmd`
 :::
 
 
+## `build_presentation.R`
+
+::: {.r-fit-text}
+
+```{.r}
+.find_package <- function(package) {
+    if (is.null(package)) {
+        package <- getwd()
+        return(package)
+    }
+    else if (dir.exists(package)) {
+        return(package)
+    }
+    source_path <- tempdir()
+    utils::download.packages(package, source_path)
+    source_name <- list.files(source_path, pattern = glue::glue("{package}.*\\.tar\\.gz"))
+    utils::untar(glue::glue("{source_path}/{source_name}"), exdir = glue::glue("{source_path}"))
+    package <- glue::glue("{source_path}/{package}")
+    return(package)
+}
+```
+
+:::
