@@ -9,7 +9,7 @@ create_yaml(
   format_theme = c(),
   format_functions = list(),
   format_datasets = list(),
-  choose_functions = c(),
+  choose_functions = list(),
   choose_datasets = c()
 )
 }
@@ -23,7 +23,7 @@ not end in a slash of any kind.}
 
 \item{format_datasets}{A named list of format dataset options}
 
-\item{choose_functions}{A vector of function names}
+\item{choose_functions}{A list of file or function names}
 
 \item{choose_datasets}{A vector of dataset names}
 }

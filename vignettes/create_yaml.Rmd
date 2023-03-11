@@ -76,8 +76,8 @@ create_yaml(
     source = TRUE,
     references = TRUE
   ),
-  choose_functions = c("all"),
-  choose_datasets = c("all")
+  choose_functions = list("all"),
+  choose_datasets = list("all")
 )
 ```
 
@@ -97,7 +97,7 @@ file.remove("_pkgslides.yml")
 
 This example generates a `pkgslides` presentation for itself. We don't need any source code, but want the rest of the function slides. We also specify that we want to automatically choose slides from `yaml.R` which will include all functions. The `auto` option produces slides for internal functions only if they are in the same file as an exported function. Thus, when used on a single file, it produces the same result as `all`. We then specify that we only want the `.get_title()` and `.collate_title()` functions from `build_title.R` and all functions from `build_presentation.R`.
 
-```{yaml}
+```{.yaml}
 format:
   functions:
     code: false
@@ -131,7 +131,7 @@ create_yaml(
 )
 ```
 
-Again, we can check our file and see that while the formatting is slightly different, it yields the same data.
+Again, we can check our file and see that while the formatting is slightly different and all options are now present, it yields the same data.
 
 ```{r}
 yaml::read_yaml("_pkgslides.yml") |> 
