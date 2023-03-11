@@ -1,3 +1,51 @@
+#' Create `_pkgslides.yml`
+#'
+#' @param path A file path to where you want the yaml file written. This should
+#'   not end in a slash of any kind.
+#' @param format_theme A length-one character vector of theme details
+#' @param format_functions A named list of format function options
+#' @param format_datasets A named list of format dataset options
+#' @param choose_functions A list of file or function names
+#' @param choose_datasets A vector of dataset names
+#'
+#' @return This will not fill the file, simply create it.
+#' @export
+create_yaml <- function(
+    path = ".",
+    format_theme = c(), format_functions = list(), format_datasets = list(),
+    choose_functions = list(), choose_datasets = c()
+) {
+  # package <- .find_package(package)
+  file <- glue::glue("{path}/_pkgslides.yml")
+  stopifnot(!file.exists(file))
+
+  # formatting
+  format_theme <- format_theme[format_theme %in% c("theme")]
+  format_functions <-
+    format_functions[names(format_functions) %in% c("description", "returns", "parameters", "examples", "code")]
+  format_datasets <-
+    format_datasets[names(format_datasets) %in% c("format", "source", "references")]
+
+  .append_to_yaml <- function(yaml, obj, name) {
+    if (length(obj) > 0) { yaml$format[[name]] <- obj }
+    return(yaml)
+  }
+
+  yaml <-
+    list() |>
+    .append_to_yaml(format_theme, "theme") |>
+    .append_to_yaml(format_functions, "functions") |>
+    .append_to_yaml(format_datasets, "datasets")
+
+  # print options
+  yaml <- .process_choose_functions(yaml, choose_functions)
+  yaml$datasets <- choose_datasets
+
+  yaml |>
+    .check_yaml() |>
+    yaml::write_yaml(file)
+}
+
 #' Parse `_pkgslides.yml`
 #'
 #' @param package A file path to the root directory of an R package source
@@ -35,11 +83,11 @@
     .set_as_true(
       "functions",
       c("description", "returns", "parameters",
-        "examples", "code",  "tests")
+        "examples", "code")
     ) |>
     .set_as_true(
       "datasets",
-      c("format", "source", "references", "view")
+      c("format", "source", "references")
     )
 
   return(yaml)
@@ -65,73 +113,45 @@
   return(yaml)
 }
 
-#' Create `_pkgslides.yml`
+#' Title
 #'
-#' @param path A file path to where you want the yaml file written. This should
-#'   not end in a slash of any kind.
-#' @param format_theme A length-one character vector of theme details
-#' @param format_functions A named list of format function options
-#' @param format_datasets A named list of format dataset options
-#' @param choose_functions A vector of function names
-#' @param choose_datasets A vector of dataset names
+#' @param yaml A list representing a yaml file
+#' @param choose The list passed to `choose_functions` in the `create_yaml`
+#'   function
 #'
-#' @return This will not fill the file, simply create it.
-#' @export
-#'
-#' @examples
-#' # NOT RUN
-#' # To create a yaml like this for the palmerpenguins package
-#' # YAML
-#' # ----
-#' # format:
-#' #   theme: default
-#' #   functions:
-#' #     tests: false
-#' #
-#' # functions: all
-#' #
-#' # datasets:
-#' #   - penguins
-#' #
-#' # R:
-#' # ----
-#' # create_yaml(
-#' #   "palmerpenguins",
-#' #   format_functions = list(tests = FALSE),
-#' #   choose_datasets = c("penguins")
-#' # )
-create_yaml <- function(
-    path = ".",
-    format_theme = c(), format_functions = list(), format_datasets = list(),
-    choose_functions = c(), choose_datasets = c()
-    ) {
-  # package <- .find_package(package)
-  file <- glue::glue("{path}/_pkgslides.yml")
-  stopifnot(!file.exists(file))
+#' @return A list representing a yaml file
+#' @keywords internal
+.process_choose_functions <- function(yaml, choose) {
+  # choose <- list("test.R" = c("one", "two"), "test2.R" = "three", "test3.R")
+  # choose <- list(one = "two", three = "four")
+  # choose <- list("one.R", "two.R")
 
-  # formatting
-  format_theme <- format_theme[format_theme %in% c("theme")]
-  format_functions <-
-    format_functions[names(format_functions) %in% c("description", "returns", "parameters", "examples", "code",  "tests")]
-  format_datasets <-
-    format_datasets[names(format_datasets) %in% c("format", "source", "references", "view")]
+  yaml2 <- list()
 
-  .append_to_yaml <- function(yaml, obj, name) {
-    if (length(obj) > 0) { yaml$format[[name]] <- obj }
-    return(yaml)
+  dim <- sapply(choose, length)
+  choose_names <- names(choose)
+
+  if (all(dim == 1) & is.null(choose_names)) {
+    stopifnot(all(grepl("^(auto|exported|all)$|\\.R$", choose)))
+    yaml2$functions <- lapply(choose, \(x) { list(file = x) })
+  } else {
+    if (any(choose_names == "")) {
+      needs_name <- which(choose_names == "" & dim == 1)
+      names(choose)[needs_name] <- unlist(sapply(choose, unlist)[needs_name])
+      choose[needs_name] <- "all"
+      choose_names <- names(choose)
+    }
+    stopifnot(all(grepl("^(auto|exported|all)$|\\.R$\\.R$", choose_names)))
+    yaml2$functions <-
+      mapply(\(x, y) {
+        list(file = x, slides = y)
+      }, choose_names, choose, SIMPLIFY = FALSE, USE.NAMES = FALSE)
   }
 
+
   yaml <-
-    list() |>
-    .append_to_yaml(format_theme, "theme") |>
-    .append_to_yaml(format_functions, "functions") |>
-    .append_to_yaml(format_datasets, "datasets")
+    list(yaml, yaml2) |>
+    unlist(recursive = FALSE)
 
-  # print options
-  yaml$functions <- choose_functions
-  yaml$datasets <- choose_datasets
-
-  yaml |>
-    .check_yaml() |>
-    yaml::write_yaml(file)
+  return(yaml)
 }
