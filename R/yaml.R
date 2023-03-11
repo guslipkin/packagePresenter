@@ -122,17 +122,14 @@ create_yaml <- function(
 #' @return A list representing a yaml file
 #' @keywords internal
 .process_choose_functions <- function(yaml, choose) {
-  # choose <- list("test.R" = c("one", "two"), "test2.R" = "three", "test3.R")
-  # choose <- list(one = "two", three = "four")
-  # choose <- list("one.R", "two.R")
-
   yaml2 <- list()
-
-  dim <- sapply(choose, length)
+  dim <- vapply(choose, length, FUN.VALUE = 1)
   choose_names <- names(choose)
 
+  opt_regex <- "^(auto|exported|all)$|\\.R$"
+
   if (all(dim == 1) & is.null(choose_names)) {
-    stopifnot(all(grepl("^(auto|exported|all)$|\\.R$", choose)))
+    stopifnot(all(grepl(opt_regex, choose)))
     yaml2$functions <- lapply(choose, \(x) { list(file = x) })
   } else {
     if (any(choose_names == "")) {
@@ -141,7 +138,7 @@ create_yaml <- function(
       choose[needs_name] <- "all"
       choose_names <- names(choose)
     }
-    stopifnot(all(grepl("^(auto|exported|all)$|\\.R$\\.R$", choose_names)))
+    stopifnot(all(grepl(opt_regex, choose_names)))
     yaml2$functions <-
       mapply(\(x, y) {
         list(file = x, slides = y)
