@@ -153,3 +153,5 @@ docs/CNAME
 inst/doc
 vignettes/_pkgslides.yml
 docs
+/doc/
+/Meta/

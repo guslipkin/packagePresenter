@@ -1,7 +1,17 @@
 url: ~
 template:
   bootstrap: 5
+  bootswatch: flatly
 
 authors:
   Gus Lipkin:
     href: "https://guslipkin.me"
+
+navbar:
+  structure:
+    left: [intro, reference, articles, pkgslides]
+    right: [search, github]
+  components:
+    pkgslides:
+      text: "See it in Action"
+      href: ../pkgslides.html

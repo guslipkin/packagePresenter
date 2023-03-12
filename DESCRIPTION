@@ -20,4 +20,5 @@ Suggests:
     palmerpenguins,
     yaml
 VignetteBuilder: knitr
-URL: http://guslipkin.me/pkgslides/
+URL: http://pkgslides.guslipkin.me/, https://github.com/guslipkin/pkgslides
+BugReports: https://github.com/guslipkin/pkgslides/issues
