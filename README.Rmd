@@ -35,6 +35,7 @@ This is a basic example which will build and render a [Quarto RevealJS](https://
 
 ```{r include=FALSE}
 file.remove("_pkgslides.yml")
+file.copy("pkgslides.html", "docs")
 ```
 
 ```{r example}

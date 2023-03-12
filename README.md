@@ -31,10 +31,10 @@ pkgslides::build_presentation()
 #> Config written to './_pkgslides.yml'
 #> ℹ Loading pkgslides
 #> /Users/guslipkin/Documents/GitHub/pkgslides/pkgslides.qmd
-#> [31m
+#> [31m
 #> 
 #> processing file: pkgslides.qmd
-#> [39m  |                                                                              |                                                                      |   0%  |                                                                              |.......................                                               |  33%
+#> [39m  |                                                                              |                                                                      |   0%  |                                                                              |.......................                                               |  33%
 #>   ordinary text without R code
 #> 
 #>   |                                                                              |...............................................                       |  67%
@@ -46,9 +46,9 @@ pkgslides::build_presentation()
 #>   ordinary text without R code
 #> 
 #> 
-#> [31moutput file: pkgslides.knit.md
+#> [31moutput file: pkgslides.knit.md
 #> 
-#> [39m[1mpandoc [22m
+#> [39m[1mpandoc [22m
 #>   to: revealjs
 #>   output-file: pkgslides.html
 #>   standalone: true
@@ -61,7 +61,7 @@ pkgslides::build_presentation()
 #>       https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_HTML-full
 #>   slide-level: 2
 #>   
-#> [1mmetadata[22m
+#> [1mmetadata[22m
 #>   link-citations: true
 #>   width: 1050
 #>   height: 700
@@ -86,3 +86,4 @@ pkgslides::build_presentation()
 #>   
 #> Output created: pkgslides.html
 ```
+

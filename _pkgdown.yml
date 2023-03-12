@@ -14,4 +14,4 @@ navbar:
   components:
     pkgslides:
       text: "See it in Action"
-      href: ../pkgslides.html
+      href: pkgslides.html
