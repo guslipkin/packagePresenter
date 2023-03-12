@@ -20,3 +20,4 @@ Suggests:
     palmerpenguins,
     yaml
 VignetteBuilder: knitr
+URL: http://guslipkin.me/pkgslides/

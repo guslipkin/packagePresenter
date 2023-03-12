@@ -152,3 +152,4 @@ docs/CNAME
 *.html
 inst/doc
 vignettes/_pkgslides.yml
+docs
