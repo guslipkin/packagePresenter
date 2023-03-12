@@ -148,8 +148,6 @@ dmypy.json
 .RData
 .Rhistory
 docs/CNAME
-*.qmd
-*.html
 inst/doc
 vignettes/_pkgslides.yml
 /doc/
