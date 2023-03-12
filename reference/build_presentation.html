@@ -72,14 +72,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">build_presentation</span><span class="op">(</span>package <span class="op">=</span> <span class="cn">NULL</span>, file <span class="op">=</span> <span class="cn">NULL</span>, yaml <span class="op">=</span> <span class="fu"><a href="create_yaml.html">create_yaml</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">build_presentation</span><span class="op">(</span>package <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>, file <span class="op">=</span> <span class="cn">NULL</span>, yaml <span class="op">=</span> <span class="fu"><a href="create_yaml.html">create_yaml</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>package</dt>
 <dd><p>A file path to the root directory of an R package source
-folder.</p></dd>
+folder, the name of an R package from CRAN, or an R package from
+GitHub in the username/repository format.</p></dd>
 
 
 <dt>file</dt>
