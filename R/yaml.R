@@ -11,13 +11,13 @@
 #' @return This will not fill the file, simply create it.
 #' @export
 create_yaml <- function(
-    path = ".",
+    path = getwd(),
     format_theme = c(), format_functions = list(), format_datasets = list(),
     choose_functions = list(), choose_datasets = c()
 ) {
   # package <- .find_package(package)
   file <- glue::glue("{path}/_pkgslides.yml")
-  stopifnot(!file.exists(file))
+  # stopifnot(!file.exists(file))
 
   # formatting
   format_theme <- format_theme[format_theme %in% c("theme")]

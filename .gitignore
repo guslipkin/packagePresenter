@@ -152,3 +152,10 @@ inst/doc
 vignettes/_pkgslides.yml
 /doc/
 /Meta/
+
+*.qmd
+*.html
+!pkgslides.qmd
+!pkgslides.html
+!docs/*.html
+pkgslides

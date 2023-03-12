@@ -8,7 +8,8 @@
 #'   examples, and source code.
 #'
 #' @param package A file path to the root directory of an R package source
-#'   folder.
+#'   folder, the name of an R package from CRAN, or an R package from
+#'   GitHub in the username/repository format.
 #' @param file The file name for your .qmd file. This can be a path so long as
 #'   it ends with a `file_name.qmd`
 #' @param yaml A `_pkgslides.yml` file or function call to `create_yaml()`
@@ -16,28 +17,28 @@
 #' @return This function creates and renders a .qmd presentation but does not
 #'   return an R object.
 #' @export
-build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()) {
+build_presentation <- function(package = getwd(), file = NULL, yaml = create_yaml()) {
 
   package <- .find_package(package)
-  file <- .find_file(package, file)
+  file <- .find_file(package$path, file)
 
   yaml <- .parse_yaml(yaml)
 
-  if (rev(strsplit(package, "/")[[1]])[1] %in% rownames(utils::installed.packages())) {
+  if (package$name %in% rownames(utils::installed.packages())) {
     chunk_opt <- "echo"
   } else { chunk_opt <- "eval" }
 
   title_contents <-
-    .get_title(package) |>
+    .get_title(package$path) |>
     .collate_title(yaml)
 
   package_contents <-
-    .get_description(package) |>
+    .get_description(package$path) |>
     .collate_description(chunk_opt)
 
-  contents <- .get_roxygen(package, yaml)
+  contents <- .get_roxygen(package$path, yaml)
 
-  r_files <- paste0(package, "/R")
+  r_files <- paste0(package$path, "/R")
   package_functions <- list.files(r_files, pattern = "\\.R$")
   function_contents <-
     .get_functions(contents$functions, yaml) |>
@@ -63,7 +64,6 @@ build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()
   close(fileConn)
 
   quarto::quarto_render(file)
-
 }
 
 #' Title
@@ -94,23 +94,42 @@ build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()
 #' @return A path to a package source
 #' @keywords internal
 .find_package <- function(package) {
-  if (is.null(package)) {
-    package <- getwd()
-    return(package)
-  } else if (dir.exists(package)) {
-    return(package)
+  if (package == getwd() | dir.exists(package)) {
+    name <- rev(strsplit(package, "/")[[1]])[1]
+    return(list(name = name, path = package))
   }
 
   source_path <- tempdir()
-  utils::download.packages(package, source_path)
-  source_name <-
-    list.files(source_path, pattern = glue::glue("{package}.*\\.tar\\.gz"))
-  utils::untar(
-    glue::glue("{source_path}/{source_name}"),
-    exdir = glue::glue("{source_path}")
-  )
-  package <- glue::glue("{source_path}/{package}")
-  return(package)
+
+  if (package %in% rownames(utils::available.packages())) {
+    print("cran")
+    utils::download.packages(package, source_path)
+    source_name <-
+      list.files(source_path, pattern = glue::glue("{package}.*\\.tar\\.gz"))
+    utils::untar(
+      glue::glue("{source_path}/{source_name}"),
+      exdir = glue::glue("{source_path}")
+    )
+  } else {
+    print("github")
+    repo <- remotes::parse_repo_spec(package)
+    package <- repo$repo
+    stopifnot(repo$username != "" & repo$repo != "")
+    zip <- glue::glue("{source_path}/{package}.zip")
+    utils::download.file(url = glue::glue("https://github.com/{repo$username}/{repo$repo}/archive/master.zip"), zip)
+    if (file.exists(zip)) {
+      utils::unzip(zip, exdir = glue::glue("{source_path}"), overwrite = TRUE)
+    }
+    dirs <- list.dirs(glue::glue("{source_path}"), recursive = FALSE)
+    dirs <- grep(glue::glue("({package}-(main|master))"), dirs, value = TRUE)
+    new_name <- glue::glue("{source_path}/{package}")
+    unlink(new_name, recursive = TRUE)
+    file.rename(dirs, new_name)
+    # file.copy(glue::glue("{getwd()}/_pkgslides.yml"), source_path)
+  }
+
+  package_path <- glue::glue("{source_path}/{package}")
+  return(list(name = package, path = package_path))
 }
 
 # package <- "/Users/guslipkin/Documents/GitHub/pkgslides"

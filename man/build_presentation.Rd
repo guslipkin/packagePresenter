@@ -4,11 +4,12 @@
 \alias{build_presentation}
 \title{Create a Revealjs Presentation with Quarto}
 \usage{
-build_presentation(package = NULL, file = NULL, yaml = create_yaml())
+build_presentation(package = getwd(), file = NULL, yaml = create_yaml())
 }
 \arguments{
 \item{package}{A file path to the root directory of an R package source
-folder.}
+folder, the name of an R package from CRAN, or an R package from
+GitHub in the username/repository format.}
 
 \item{file}{The file name for your .qmd file. This can be a path so long as
 it ends with a `file_name.qmd`}

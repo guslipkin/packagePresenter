@@ -5,7 +5,7 @@
 \title{Create `_pkgslides.yml`}
 \usage{
 create_yaml(
-  path = ".",
+  path = getwd(),
   format_theme = c(),
   format_functions = list(),
   format_datasets = list(),

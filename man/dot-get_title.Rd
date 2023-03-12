@@ -8,7 +8,8 @@
 }
 \arguments{
 \item{package}{A file path to the root directory of an R package source
-folder.}
+folder, the name of an R package from CRAN, or an R package from
+GitHub in the username/repository format.}
 }
 \value{
 A list of roxygen2 properties for the package's DESCRIPTION file used
