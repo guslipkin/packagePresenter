@@ -1,0 +1,42 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# pkgslides
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of `pkgslides` is to make it easier for you to learn about R packages by converting existing documentation into an easily digested slideshow.
+
+## Installation
+
+You can install the development version of pkgslides from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("guslipkin/pkgslides")
+```
+
+## Example
+
+This is a basic example which will build and render a [Quarto RevealJS](https://quarto.org/docs/presentations/revealjs/) presentation for `pkgslides`:
+
+```{r include=FALSE}
+file.remove("_pkgslides.yml")
+```
+
+```{r example}
+pkgslides::build_presentation()
+```

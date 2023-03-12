@@ -21,9 +21,7 @@ build_presentation <- function(package = NULL, file = NULL, yaml = create_yaml()
   package <- .find_package(package)
   file <- .find_file(package, file)
 
-  if (file.exists(glue::glue("{package}/_pkgslides.yml"))) {
-    yaml <- .parse_yaml(package)
-  }
+  yaml <- .parse_yaml(yaml)
 
   if (rev(strsplit(package, "/")[[1]])[1] %in% rownames(utils::installed.packages())) {
     chunk_opt <- "echo"

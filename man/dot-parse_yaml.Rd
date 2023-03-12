@@ -4,11 +4,10 @@
 \alias{.parse_yaml}
 \title{Parse `_pkgslides.yml`}
 \usage{
-.parse_yaml(package)
+.parse_yaml(file)
 }
 \arguments{
-\item{package}{A file path to the root directory of an R package source
-folder.}
+\item{file}{A file path the _pkgslides.yml file}
 }
 \value{
 A list representing a yaml file

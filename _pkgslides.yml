@@ -1,12 +1,4 @@
-functions:
-- file: yaml.R
-  slides: auto
-- file: build_title.R
-  slides:
-  - .get_title
-  - .collate_title
-- file: build_presentation.R
-  slides: all
+functions: auto
 datasets: all
 format:
   theme: default

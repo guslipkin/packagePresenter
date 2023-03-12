@@ -48,17 +48,17 @@ create_yaml <- function(
     yaml::write_yaml(file)
 
   print(glue::glue("Config written to '{file}'"))
+
+  return(file)
 }
 
 #' Parse `_pkgslides.yml`
 #'
-#' @param package A file path to the root directory of an R package source
-#'   folder.
+#' @param file A file path the _pkgslides.yml file
 #'
 #' @return A list representing a yaml file
 #' @keywords internal
-.parse_yaml <- function(package) {
-  file <- glue::glue("{package}/_pkgslides.yml")
+.parse_yaml <- function(file) {
   if (file.exists(file)) {
     yaml <-
       yaml::read_yaml(file) |>
