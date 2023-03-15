@@ -34,7 +34,13 @@
       )
     })
 
-  code <- rlang::expr_text(block$call)
+  call <- glue::glue("{topic} <- ")
+  code <-
+    block$object$value |>
+    utils::capture.output() |>
+    utils::head(-1) |>
+    paste0(collapse = "\n")
+  code <- paste0(call, code)
 
   function_details <-
     list(

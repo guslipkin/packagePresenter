@@ -28,7 +28,8 @@ not end in a slash of any kind.}
 \item{choose_datasets}{A vector of dataset names}
 }
 \value{
-This will not fill the file, simply create it.
+This will create the file and write to it, then return the
+ file path.
 }
 \description{
 Create `_pkgslides.yml`

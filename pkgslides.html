@@ -1236,7 +1236,7 @@ margin-right: 0; }
 <h2>Parameters</h2>
 <div class="r-fit-text">
 <ul>
-<li><code>package</code>: A file path to the root directory of an R package source folder.</li>
+<li><code>package</code>: A file path to the root directory of an R package source folder, the name of an R package from CRAN, or an R package from GitHub in the username/repository format.</li>
 <li><code>file</code>: The file name for your .qmd file. This can be a path so long as it ends with a <code>file_name.qmd</code></li>
 <li><code>yaml</code>: A <code>_pkgslides.yml</code> file or function call to <code>create_yaml()</code></li>
 </ul>
@@ -1245,35 +1245,54 @@ margin-right: 0; }
 <section id="build_presentation.r" class="slide level2">
 <h2><code>build_presentation.R</code></h2>
 <div class="r-fit-text">
-<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>build_presentation <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">package =</span> <span class="cn">NULL</span>, <span class="at">file =</span> <span class="cn">NULL</span>, <span class="at">yaml =</span> <span class="fu">create_yaml</span>()) {</span>
-<span id="cb1-2"><a href="#cb1-2"></a>    package <span class="ot">&lt;-</span> <span class="fu">.find_package</span>(package)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>    file <span class="ot">&lt;-</span> <span class="fu">.find_file</span>(package, file)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">.parse_yaml</span>(yaml)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>    <span class="cf">if</span> (<span class="fu">rev</span>(<span class="fu">strsplit</span>(package, <span class="st">&quot;/&quot;</span>)[[<span class="dv">1</span>]])[<span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">rownames</span>(utils<span class="sc">::</span><span class="fu">installed.packages</span>())) {</span>
-<span id="cb1-6"><a href="#cb1-6"></a>        chunk_opt <span class="ot">&lt;-</span> <span class="st">&quot;echo&quot;</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    }</span>
-<span id="cb1-8"><a href="#cb1-8"></a>    <span class="cf">else</span> {</span>
-<span id="cb1-9"><a href="#cb1-9"></a>        chunk_opt <span class="ot">&lt;-</span> <span class="st">&quot;eval&quot;</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a>    }</span>
-<span id="cb1-11"><a href="#cb1-11"></a>    title_contents <span class="ot">&lt;-</span> <span class="fu">.collate_title</span>(<span class="fu">.get_title</span>(package), yaml)</span>
-<span id="cb1-12"><a href="#cb1-12"></a>    package_contents <span class="ot">&lt;-</span> <span class="fu">.collate_description</span>(<span class="fu">.get_description</span>(package), </span>
-<span id="cb1-13"><a href="#cb1-13"></a>        chunk_opt)</span>
-<span id="cb1-14"><a href="#cb1-14"></a>    contents <span class="ot">&lt;-</span> <span class="fu">.get_roxygen</span>(package, yaml)</span>
-<span id="cb1-15"><a href="#cb1-15"></a>    r_files <span class="ot">&lt;-</span> <span class="fu">paste0</span>(package, <span class="st">&quot;/R&quot;</span>)</span>
-<span id="cb1-16"><a href="#cb1-16"></a>    package_functions <span class="ot">&lt;-</span> <span class="fu">list.files</span>(r_files, <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.R$&quot;</span>)</span>
-<span id="cb1-17"><a href="#cb1-17"></a>    function_contents <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">.get_functions</span>(contents<span class="sc">$</span>functions, </span>
-<span id="cb1-18"><a href="#cb1-18"></a>        yaml), .collate_functions, chunk_opt))</span>
-<span id="cb1-19"><a href="#cb1-19"></a>    data_contents <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">.get_datasets</span>(contents<span class="sc">$</span>datasets, </span>
-<span id="cb1-20"><a href="#cb1-20"></a>        yaml), .collate_datasets))</span>
-<span id="cb1-21"><a href="#cb1-21"></a>    file_contents <span class="ot">&lt;-</span> <span class="fu">c</span>(title_contents, package_contents, function_contents, </span>
-<span id="cb1-22"><a href="#cb1-22"></a>        data_contents)</span>
-<span id="cb1-23"><a href="#cb1-23"></a>    <span class="fu">print</span>(file)</span>
-<span id="cb1-24"><a href="#cb1-24"></a>    <span class="fu">file.create</span>(file)</span>
-<span id="cb1-25"><a href="#cb1-25"></a>    fileConn <span class="ot">&lt;-</span> <span class="fu">file</span>(file)</span>
-<span id="cb1-26"><a href="#cb1-26"></a>    <span class="fu">writeLines</span>(file_contents, fileConn)</span>
-<span id="cb1-27"><a href="#cb1-27"></a>    <span class="fu">close</span>(fileConn)</span>
-<span id="cb1-28"><a href="#cb1-28"></a>    quarto<span class="sc">::</span><span class="fu">quarto_render</span>(file)</span>
-<span id="cb1-29"><a href="#cb1-29"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>build_presentation <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">package =</span> <span class="fu">getwd</span>(), <span class="at">file =</span> <span class="cn">NULL</span>, <span class="at">yaml =</span> <span class="fu">create_yaml</span>()) {</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>  package <span class="ot">&lt;-</span> <span class="fu">.find_package</span>(package)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>  file <span class="ot">&lt;-</span> <span class="fu">.find_file</span>(package<span class="sc">$</span>path, file)</span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>  yaml <span class="ot">&lt;-</span> <span class="fu">.parse_yaml</span>(yaml)</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="cf">if</span> (package<span class="sc">$</span>name <span class="sc">%in%</span> <span class="fu">rownames</span>(utils<span class="sc">::</span><span class="fu">installed.packages</span>())) {</span>
+<span id="cb1-9"><a href="#cb1-9"></a>    chunk_opt <span class="ot">&lt;-</span> <span class="st">&quot;echo&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>  } <span class="cf">else</span> { chunk_opt <span class="ot">&lt;-</span> <span class="st">&quot;eval&quot;</span> }</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  title_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>    <span class="fu">.get_title</span>(package<span class="sc">$</span>path) <span class="sc">|&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>    <span class="fu">.collate_title</span>(yaml)</span>
+<span id="cb1-15"><a href="#cb1-15"></a></span>
+<span id="cb1-16"><a href="#cb1-16"></a>  package_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a>    <span class="fu">.get_description</span>(package<span class="sc">$</span>path) <span class="sc">|&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>    <span class="fu">.collate_description</span>(chunk_opt)</span>
+<span id="cb1-19"><a href="#cb1-19"></a></span>
+<span id="cb1-20"><a href="#cb1-20"></a>  contents <span class="ot">&lt;-</span> <span class="fu">.get_roxygen</span>(package<span class="sc">$</span>path, yaml)</span>
+<span id="cb1-21"><a href="#cb1-21"></a></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  r_files <span class="ot">&lt;-</span> <span class="fu">paste0</span>(package<span class="sc">$</span>path, <span class="st">&quot;/R&quot;</span>)</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  package_functions <span class="ot">&lt;-</span> <span class="fu">list.files</span>(r_files, <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.R$&quot;</span>)</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  function_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-25"><a href="#cb1-25"></a>    <span class="fu">.get_functions</span>(contents<span class="sc">$</span>functions, yaml) <span class="sc">|&gt;</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>    <span class="fu">lapply</span>(.collate_functions, chunk_opt) <span class="sc">|&gt;</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a>    <span class="fu">unlist</span>()</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a>  data_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>    <span class="fu">.get_datasets</span>(contents<span class="sc">$</span>datasets, yaml) <span class="sc">|&gt;</span></span>
+<span id="cb1-31"><a href="#cb1-31"></a>    <span class="fu">lapply</span>(.collate_datasets) <span class="sc">|&gt;</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a>    <span class="fu">unlist</span>()</span>
+<span id="cb1-33"><a href="#cb1-33"></a></span>
+<span id="cb1-34"><a href="#cb1-34"></a>  file_contents <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-35"><a href="#cb1-35"></a>    title_contents,</span>
+<span id="cb1-36"><a href="#cb1-36"></a>    package_contents,</span>
+<span id="cb1-37"><a href="#cb1-37"></a>    function_contents,</span>
+<span id="cb1-38"><a href="#cb1-38"></a>    data_contents</span>
+<span id="cb1-39"><a href="#cb1-39"></a>  )</span>
+<span id="cb1-40"><a href="#cb1-40"></a></span>
+<span id="cb1-41"><a href="#cb1-41"></a>  <span class="fu">print</span>(file)</span>
+<span id="cb1-42"><a href="#cb1-42"></a>  <span class="fu">file.create</span>(file)</span>
+<span id="cb1-43"><a href="#cb1-43"></a>  fileConn <span class="ot">&lt;-</span> <span class="fu">file</span>(file)</span>
+<span id="cb1-44"><a href="#cb1-44"></a>  <span class="fu">writeLines</span>(file_contents, fileConn)</span>
+<span id="cb1-45"><a href="#cb1-45"></a>  <span class="fu">close</span>(fileConn)</span>
+<span id="cb1-46"><a href="#cb1-46"></a></span>
+<span id="cb1-47"><a href="#cb1-47"></a>  quarto<span class="sc">::</span><span class="fu">quarto_render</span>(file)</span>
+<span id="cb1-48"><a href="#cb1-48"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1299,15 +1318,18 @@ margin-right: 0; }
 <h2><code>build_presentation.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>.find_file <span class="ot">&lt;-</span> <span class="cf">function</span>(package, file) {</span>
-<span id="cb2-2"><a href="#cb2-2"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(file)) {</span>
-<span id="cb2-3"><a href="#cb2-3"></a>        file <span class="ot">&lt;-</span> <span class="fu">.get_file_from_path</span>(package)</span>
-<span id="cb2-4"><a href="#cb2-4"></a>    }</span>
-<span id="cb2-5"><a href="#cb2-5"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.qmd$&quot;</span>, file)) {</span>
-<span id="cb2-6"><a href="#cb2-6"></a>        file <span class="ot">&lt;-</span> <span class="fu">paste0</span>(file, <span class="st">&quot;.qmd&quot;</span>)</span>
-<span id="cb2-7"><a href="#cb2-7"></a>    }</span>
-<span id="cb2-8"><a href="#cb2-8"></a>    file <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{getwd()}/{file}&quot;</span>)</span>
-<span id="cb2-9"><a href="#cb2-9"></a>    <span class="fu">return</span>(file)</span>
-<span id="cb2-10"><a href="#cb2-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(file)) {</span>
+<span id="cb2-3"><a href="#cb2-3"></a>    file <span class="ot">&lt;-</span> <span class="fu">.get_file_from_path</span>(package)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  }</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.qmd$&quot;</span>, file)) {</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    file <span class="ot">&lt;-</span> <span class="fu">paste0</span>(file, <span class="st">&quot;.qmd&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  }</span>
+<span id="cb2-9"><a href="#cb2-9"></a></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  file <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{getwd()}/{file}&quot;</span>)</span>
+<span id="cb2-11"><a href="#cb2-11"></a></span>
+<span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">return</span>(file)</span>
+<span id="cb2-13"><a href="#cb2-13"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1332,20 +1354,43 @@ margin-right: 0; }
 <h2><code>build_presentation.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>.find_package <span class="ot">&lt;-</span> <span class="cf">function</span>(package) {</span>
-<span id="cb3-2"><a href="#cb3-2"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(package)) {</span>
-<span id="cb3-3"><a href="#cb3-3"></a>        package <span class="ot">&lt;-</span> <span class="fu">getwd</span>()</span>
-<span id="cb3-4"><a href="#cb3-4"></a>        <span class="fu">return</span>(package)</span>
-<span id="cb3-5"><a href="#cb3-5"></a>    }</span>
-<span id="cb3-6"><a href="#cb3-6"></a>    <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">dir.exists</span>(package)) {</span>
-<span id="cb3-7"><a href="#cb3-7"></a>        <span class="fu">return</span>(package)</span>
-<span id="cb3-8"><a href="#cb3-8"></a>    }</span>
-<span id="cb3-9"><a href="#cb3-9"></a>    source_path <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span>
-<span id="cb3-10"><a href="#cb3-10"></a>    utils<span class="sc">::</span><span class="fu">download.packages</span>(package, source_path)</span>
-<span id="cb3-11"><a href="#cb3-11"></a>    source_name <span class="ot">&lt;-</span> <span class="fu">list.files</span>(source_path, <span class="at">pattern =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{package}.*</span><span class="sc">\\</span><span class="st">.tar</span><span class="sc">\\</span><span class="st">.gz&quot;</span>))</span>
-<span id="cb3-12"><a href="#cb3-12"></a>    utils<span class="sc">::</span><span class="fu">untar</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{source_name}&quot;</span>), <span class="at">exdir =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}&quot;</span>))</span>
-<span id="cb3-13"><a href="#cb3-13"></a>    package <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{package}&quot;</span>)</span>
-<span id="cb3-14"><a href="#cb3-14"></a>    <span class="fu">return</span>(package)</span>
-<span id="cb3-15"><a href="#cb3-15"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="cf">if</span> (package <span class="sc">==</span> <span class="fu">getwd</span>() <span class="sc">|</span> <span class="fu">dir.exists</span>(package)) {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>    name <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">strsplit</span>(package, <span class="st">&quot;/&quot;</span>)[[<span class="dv">1</span>]])[<span class="dv">1</span>]</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">name =</span> name, <span class="at">path =</span> package))</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  }</span>
+<span id="cb3-6"><a href="#cb3-6"></a></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  source_path <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="cf">if</span> (package <span class="sc">%in%</span> <span class="fu">rownames</span>(utils<span class="sc">::</span><span class="fu">available.packages</span>())) {</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="fu">print</span>(<span class="st">&quot;cran&quot;</span>)</span>
+<span id="cb3-11"><a href="#cb3-11"></a>    utils<span class="sc">::</span><span class="fu">download.packages</span>(package, source_path)</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    source_name <span class="ot">&lt;-</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a>      <span class="fu">list.files</span>(source_path, <span class="at">pattern =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{package}.*</span><span class="sc">\\</span><span class="st">.tar</span><span class="sc">\\</span><span class="st">.gz&quot;</span>))</span>
+<span id="cb3-14"><a href="#cb3-14"></a>    utils<span class="sc">::</span><span class="fu">untar</span>(</span>
+<span id="cb3-15"><a href="#cb3-15"></a>      glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{source_name}&quot;</span>),</span>
+<span id="cb3-16"><a href="#cb3-16"></a>      <span class="at">exdir =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}&quot;</span>)</span>
+<span id="cb3-17"><a href="#cb3-17"></a>    )</span>
+<span id="cb3-18"><a href="#cb3-18"></a>  } <span class="cf">else</span> {</span>
+<span id="cb3-19"><a href="#cb3-19"></a>    <span class="fu">print</span>(<span class="st">&quot;github&quot;</span>)</span>
+<span id="cb3-20"><a href="#cb3-20"></a>    repo <span class="ot">&lt;-</span> remotes<span class="sc">::</span><span class="fu">parse_repo_spec</span>(package)</span>
+<span id="cb3-21"><a href="#cb3-21"></a>    package <span class="ot">&lt;-</span> repo<span class="sc">$</span>repo</span>
+<span id="cb3-22"><a href="#cb3-22"></a>    <span class="fu">stopifnot</span>(repo<span class="sc">$</span>username <span class="sc">!=</span> <span class="st">&quot;&quot;</span> <span class="sc">&amp;</span> repo<span class="sc">$</span>repo <span class="sc">!=</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-23"><a href="#cb3-23"></a>    zip <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{package}.zip&quot;</span>)</span>
+<span id="cb3-24"><a href="#cb3-24"></a>    utils<span class="sc">::</span><span class="fu">download.file</span>(<span class="at">url =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;https://github.com/{repo$username}/{repo$repo}/archive/master.zip&quot;</span>), zip)</span>
+<span id="cb3-25"><a href="#cb3-25"></a>    <span class="cf">if</span> (<span class="fu">file.exists</span>(zip)) {</span>
+<span id="cb3-26"><a href="#cb3-26"></a>      utils<span class="sc">::</span><span class="fu">unzip</span>(zip, <span class="at">exdir =</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}&quot;</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>    }</span>
+<span id="cb3-28"><a href="#cb3-28"></a>    dirs <span class="ot">&lt;-</span> <span class="fu">list.dirs</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}&quot;</span>), <span class="at">recursive =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-29"><a href="#cb3-29"></a>    dirs <span class="ot">&lt;-</span> <span class="fu">grep</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;({package}-(main|master))&quot;</span>), dirs, <span class="at">value =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-30"><a href="#cb3-30"></a>    new_name <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{package}&quot;</span>)</span>
+<span id="cb3-31"><a href="#cb3-31"></a>    <span class="fu">unlink</span>(new_name, <span class="at">recursive =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-32"><a href="#cb3-32"></a>    <span class="fu">file.rename</span>(dirs, new_name)</span>
+<span id="cb3-33"><a href="#cb3-33"></a>    <span class="co"># file.copy(glue::glue(&quot;{getwd()}/_pkgslides.yml&quot;), source_path)</span></span>
+<span id="cb3-34"><a href="#cb3-34"></a>  }</span>
+<span id="cb3-35"><a href="#cb3-35"></a></span>
+<span id="cb3-36"><a href="#cb3-36"></a>  package_path <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{source_path}/{package}&quot;</span>)</span>
+<span id="cb3-37"><a href="#cb3-37"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">name =</span> package, <span class="at">path =</span> package_path))</span>
+<span id="cb3-38"><a href="#cb3-38"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1374,33 +1419,47 @@ margin-right: 0; }
 <section id="yaml.r" class="slide level2">
 <h2><code>yaml.R</code></h2>
 <div class="r-fit-text">
-<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>create_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">path =</span> <span class="st">&quot;.&quot;</span>, <span class="at">format_theme =</span> <span class="fu">c</span>(), <span class="at">format_functions =</span> <span class="fu">list</span>(), </span>
-<span id="cb4-2"><a href="#cb4-2"></a>    <span class="at">format_datasets =</span> <span class="fu">list</span>(), <span class="at">choose_functions =</span> <span class="fu">list</span>(), <span class="at">choose_datasets =</span> <span class="fu">c</span>()) {</span>
-<span id="cb4-3"><a href="#cb4-3"></a>    file <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{path}/_pkgslides.yml&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>    <span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">file.exists</span>(file))</span>
-<span id="cb4-5"><a href="#cb4-5"></a>    format_theme <span class="ot">&lt;-</span> format_theme[format_theme <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;theme&quot;</span>)]</span>
-<span id="cb4-6"><a href="#cb4-6"></a>    format_functions <span class="ot">&lt;-</span> format_functions[<span class="fu">names</span>(format_functions) <span class="sc">%in%</span> </span>
-<span id="cb4-7"><a href="#cb4-7"></a>        <span class="fu">c</span>(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;return&quot;</span>, <span class="st">&quot;parameters&quot;</span>, <span class="st">&quot;examples&quot;</span>, </span>
-<span id="cb4-8"><a href="#cb4-8"></a>            <span class="st">&quot;code&quot;</span>)]</span>
-<span id="cb4-9"><a href="#cb4-9"></a>    format_datasets <span class="ot">&lt;-</span> format_datasets[<span class="fu">names</span>(format_datasets) <span class="sc">%in%</span> </span>
-<span id="cb4-10"><a href="#cb4-10"></a>        <span class="fu">c</span>(<span class="st">&quot;format&quot;</span>, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;references&quot;</span>)]</span>
-<span id="cb4-11"><a href="#cb4-11"></a>    .append_to_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, obj, name) {</span>
-<span id="cb4-12"><a href="#cb4-12"></a>        <span class="cf">if</span> (<span class="fu">length</span>(obj) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb4-13"><a href="#cb4-13"></a>            yaml<span class="sc">$</span>format[[name]] <span class="ot">&lt;-</span> obj</span>
-<span id="cb4-14"><a href="#cb4-14"></a>        }</span>
-<span id="cb4-15"><a href="#cb4-15"></a>        <span class="fu">return</span>(yaml)</span>
-<span id="cb4-16"><a href="#cb4-16"></a>    }</span>
-<span id="cb4-17"><a href="#cb4-17"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">.append_to_yaml</span>(<span class="fu">.append_to_yaml</span>(<span class="fu">.append_to_yaml</span>(<span class="fu">list</span>(), </span>
-<span id="cb4-18"><a href="#cb4-18"></a>        format_theme, <span class="st">&quot;theme&quot;</span>), format_functions, <span class="st">&quot;functions&quot;</span>), </span>
-<span id="cb4-19"><a href="#cb4-19"></a>        format_datasets, <span class="st">&quot;datasets&quot;</span>)</span>
-<span id="cb4-20"><a href="#cb4-20"></a>    <span class="cf">if</span> (<span class="fu">length</span>(choose_functions) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb4-21"><a href="#cb4-21"></a>        yaml <span class="ot">&lt;-</span> <span class="fu">.process_choose_functions</span>(yaml, choose_functions)</span>
-<span id="cb4-22"><a href="#cb4-22"></a>    }</span>
-<span id="cb4-23"><a href="#cb4-23"></a>    yaml<span class="sc">$</span>datasets <span class="ot">&lt;-</span> choose_datasets</span>
-<span id="cb4-24"><a href="#cb4-24"></a>    yaml<span class="sc">::</span><span class="fu">write_yaml</span>(<span class="fu">.check_yaml</span>(yaml), file)</span>
-<span id="cb4-25"><a href="#cb4-25"></a>    <span class="fu">print</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Config written to &#39;{file}&#39;&quot;</span>))</span>
-<span id="cb4-26"><a href="#cb4-26"></a>    <span class="fu">return</span>(file)</span>
-<span id="cb4-27"><a href="#cb4-27"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>create_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb4-2"><a href="#cb4-2"></a>    <span class="at">path =</span> <span class="fu">getwd</span>(),</span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="at">format_theme =</span> <span class="fu">c</span>(), <span class="at">format_functions =</span> <span class="fu">list</span>(), <span class="at">format_datasets =</span> <span class="fu">list</span>(),</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="at">choose_functions =</span> <span class="fu">list</span>(), <span class="at">choose_datasets =</span> <span class="fu">c</span>()</span>
+<span id="cb4-5"><a href="#cb4-5"></a>) {</span>
+<span id="cb4-6"><a href="#cb4-6"></a>  <span class="co"># package &lt;- .find_package(package)</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>  file <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;{path}/_pkgslides.yml&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  <span class="co"># stopifnot(!file.exists(file))</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  <span class="co"># formatting</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a>  format_theme <span class="ot">&lt;-</span> format_theme[format_theme <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;theme&quot;</span>)]</span>
+<span id="cb4-12"><a href="#cb4-12"></a>  format_functions <span class="ot">&lt;-</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a>    format_functions[<span class="fu">names</span>(format_functions) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;return&quot;</span>, <span class="st">&quot;parameters&quot;</span>, <span class="st">&quot;examples&quot;</span>, <span class="st">&quot;code&quot;</span>)]</span>
+<span id="cb4-14"><a href="#cb4-14"></a>  format_datasets <span class="ot">&lt;-</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>    format_datasets[<span class="fu">names</span>(format_datasets) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;format&quot;</span>, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;references&quot;</span>)]</span>
+<span id="cb4-16"><a href="#cb4-16"></a></span>
+<span id="cb4-17"><a href="#cb4-17"></a>  .append_to_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, obj, name) {</span>
+<span id="cb4-18"><a href="#cb4-18"></a>    <span class="cf">if</span> (<span class="fu">length</span>(obj) <span class="sc">&gt;</span> <span class="dv">0</span>) { yaml<span class="sc">$</span>format[[name]] <span class="ot">&lt;-</span> obj }</span>
+<span id="cb4-19"><a href="#cb4-19"></a>    <span class="fu">return</span>(yaml)</span>
+<span id="cb4-20"><a href="#cb4-20"></a>  }</span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a>  yaml <span class="ot">&lt;-</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a>    <span class="fu">list</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>    <span class="fu">.append_to_yaml</span>(format_theme, <span class="st">&quot;theme&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a>    <span class="fu">.append_to_yaml</span>(format_functions, <span class="st">&quot;functions&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a>    <span class="fu">.append_to_yaml</span>(format_datasets, <span class="st">&quot;datasets&quot;</span>)</span>
+<span id="cb4-27"><a href="#cb4-27"></a></span>
+<span id="cb4-28"><a href="#cb4-28"></a>  <span class="co"># print options</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a>  <span class="cf">if</span> (<span class="fu">length</span>(choose_functions) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb4-30"><a href="#cb4-30"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">.process_choose_functions</span>(yaml, choose_functions)</span>
+<span id="cb4-31"><a href="#cb4-31"></a>  }</span>
+<span id="cb4-32"><a href="#cb4-32"></a>  yaml<span class="sc">$</span>datasets <span class="ot">&lt;-</span> choose_datasets</span>
+<span id="cb4-33"><a href="#cb4-33"></a></span>
+<span id="cb4-34"><a href="#cb4-34"></a>  yaml <span class="sc">|&gt;</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>    <span class="fu">.check_yaml</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-36"><a href="#cb4-36"></a>    yaml<span class="sc">::</span><span class="fu">write_yaml</span>(file)</span>
+<span id="cb4-37"><a href="#cb4-37"></a></span>
+<span id="cb4-38"><a href="#cb4-38"></a>  <span class="fu">print</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;Config written to &#39;{file}&#39;&quot;</span>))</span>
+<span id="cb4-39"><a href="#cb4-39"></a></span>
+<span id="cb4-40"><a href="#cb4-40"></a>  <span class="fu">return</span>(file)</span>
+<span id="cb4-41"><a href="#cb4-41"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1425,14 +1484,15 @@ margin-right: 0; }
 <h2><code>yaml.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>.parse_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(file) {</span>
-<span id="cb5-2"><a href="#cb5-2"></a>    <span class="cf">if</span> (<span class="fu">file.exists</span>(file)) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>        yaml <span class="ot">&lt;-</span> <span class="fu">.check_yaml</span>(yaml<span class="sc">::</span><span class="fu">read_yaml</span>(file))</span>
-<span id="cb5-4"><a href="#cb5-4"></a>    }</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    <span class="cf">else</span> {</span>
-<span id="cb5-6"><a href="#cb5-6"></a>        yaml <span class="ot">&lt;-</span> <span class="fu">.check_yaml</span>(<span class="fu">list</span>())</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    }</span>
-<span id="cb5-8"><a href="#cb5-8"></a>    <span class="fu">return</span>(yaml)</span>
-<span id="cb5-9"><a href="#cb5-9"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="cf">if</span> (<span class="fu">file.exists</span>(file)) {</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    yaml <span class="ot">&lt;-</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>      yaml<span class="sc">::</span><span class="fu">read_yaml</span>(file) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>      <span class="fu">.check_yaml</span>()</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  } <span class="cf">else</span> {</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">.check_yaml</span>(<span class="fu">list</span>())</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  }</span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">return</span>(yaml)</span>
+<span id="cb5-10"><a href="#cb5-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1457,20 +1517,26 @@ margin-right: 0; }
 <h2><code>yaml.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>.check_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml) {</span>
-<span id="cb6-2"><a href="#cb6-2"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>functions)) {</span>
-<span id="cb6-3"><a href="#cb6-3"></a>        yaml<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="st">&quot;auto&quot;</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a>    }</span>
-<span id="cb6-5"><a href="#cb6-5"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>datasets)) {</span>
-<span id="cb6-6"><a href="#cb6-6"></a>        yaml<span class="sc">$</span>datasets <span class="ot">&lt;-</span> <span class="st">&quot;all&quot;</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a>    }</span>
-<span id="cb6-8"><a href="#cb6-8"></a>    <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>format<span class="sc">$</span>theme)) {</span>
-<span id="cb6-9"><a href="#cb6-9"></a>        yaml<span class="sc">$</span>format<span class="sc">$</span>theme <span class="ot">&lt;-</span> <span class="st">&quot;default&quot;</span></span>
-<span id="cb6-10"><a href="#cb6-10"></a>    }</span>
-<span id="cb6-11"><a href="#cb6-11"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">.set_as_true</span>(<span class="fu">.set_as_true</span>(yaml, <span class="st">&quot;functions&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;description&quot;</span>, </span>
-<span id="cb6-12"><a href="#cb6-12"></a>        <span class="st">&quot;return&quot;</span>, <span class="st">&quot;parameters&quot;</span>, <span class="st">&quot;examples&quot;</span>, <span class="st">&quot;code&quot;</span>)), <span class="st">&quot;datasets&quot;</span>, </span>
-<span id="cb6-13"><a href="#cb6-13"></a>        <span class="fu">c</span>(<span class="st">&quot;format&quot;</span>, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;references&quot;</span>))</span>
-<span id="cb6-14"><a href="#cb6-14"></a>    <span class="fu">return</span>(yaml)</span>
-<span id="cb6-15"><a href="#cb6-15"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>functions)) { yaml<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="st">&quot;auto&quot;</span> }</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>datasets)) { yaml<span class="sc">$</span>datasets <span class="ot">&lt;-</span> <span class="st">&quot;all&quot;</span> }</span>
+<span id="cb6-5"><a href="#cb6-5"></a></span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>format<span class="sc">$</span>theme)) { yaml<span class="sc">$</span>format<span class="sc">$</span>theme <span class="ot">&lt;-</span> <span class="st">&quot;default&quot;</span> }</span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a>  yaml <span class="ot">&lt;-</span></span>
+<span id="cb6-9"><a href="#cb6-9"></a>    yaml <span class="sc">|&gt;</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>    <span class="fu">.set_as_true</span>(</span>
+<span id="cb6-11"><a href="#cb6-11"></a>      <span class="st">&quot;functions&quot;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12"></a>      <span class="fu">c</span>(<span class="st">&quot;description&quot;</span>, <span class="st">&quot;return&quot;</span>, <span class="st">&quot;parameters&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13"></a>        <span class="st">&quot;examples&quot;</span>, <span class="st">&quot;code&quot;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>    <span class="fu">.set_as_true</span>(</span>
+<span id="cb6-16"><a href="#cb6-16"></a>      <span class="st">&quot;datasets&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17"></a>      <span class="fu">c</span>(<span class="st">&quot;format&quot;</span>, <span class="st">&quot;source&quot;</span>, <span class="st">&quot;references&quot;</span>)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>    )</span>
+<span id="cb6-19"><a href="#cb6-19"></a></span>
+<span id="cb6-20"><a href="#cb6-20"></a>  <span class="fu">return</span>(yaml)</span>
+<span id="cb6-21"><a href="#cb6-21"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1497,12 +1563,16 @@ margin-right: 0; }
 <h2><code>yaml.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>.set_as_true <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, type, options) {</span>
-<span id="cb7-2"><a href="#cb7-2"></a>    requested <span class="ot">&lt;-</span> <span class="fu">names</span>(yaml<span class="sc">$</span>format[[type]])</span>
-<span id="cb7-3"><a href="#cb7-3"></a>    not_specified <span class="ot">&lt;-</span> options[<span class="sc">!</span>(options <span class="sc">%in%</span> requested)]</span>
-<span id="cb7-4"><a href="#cb7-4"></a>    yaml<span class="sc">$</span>format[[type]] <span class="ot">&lt;-</span> <span class="fu">append</span>(<span class="st">`</span><span class="at">names&lt;-</span><span class="st">`</span>(<span class="fu">lapply</span>(<span class="fu">seq_along</span>(not_specified), </span>
-<span id="cb7-5"><a href="#cb7-5"></a>        <span class="cf">function</span>(s) <span class="cn">TRUE</span>), not_specified), yaml<span class="sc">$</span>format[[type]])</span>
-<span id="cb7-6"><a href="#cb7-6"></a>    <span class="fu">return</span>(yaml)</span>
-<span id="cb7-7"><a href="#cb7-7"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href="#cb7-2"></a>  requested <span class="ot">&lt;-</span> <span class="fu">names</span>(yaml<span class="sc">$</span>format[[type]])</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  not_specified <span class="ot">&lt;-</span> options[<span class="sc">!</span>(options <span class="sc">%in%</span> requested)]</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a>  yaml<span class="sc">$</span>format[[type]] <span class="ot">&lt;-</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="fu">lapply</span>(<span class="fu">seq_along</span>(not_specified), \(s) <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>    <span class="st">`</span><span class="at">names&lt;-</span><span class="st">`</span>(not_specified) <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="fu">append</span>(yaml<span class="sc">$</span>format[[type]])</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a>  <span class="fu">return</span>(yaml)</span>
+<span id="cb7-11"><a href="#cb7-11"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section>
@@ -1528,32 +1598,36 @@ margin-right: 0; }
 <h2><code>yaml.R</code></h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>.process_choose_functions <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, choose) {</span>
-<span id="cb8-2"><a href="#cb8-2"></a>    yaml2 <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb8-3"><a href="#cb8-3"></a>    dim <span class="ot">&lt;-</span> <span class="fu">vapply</span>(choose, length, <span class="at">FUN.VALUE =</span> <span class="dv">1</span>)</span>
-<span id="cb8-4"><a href="#cb8-4"></a>    choose_names <span class="ot">&lt;-</span> <span class="fu">names</span>(choose)</span>
-<span id="cb8-5"><a href="#cb8-5"></a>    opt_regex <span class="ot">&lt;-</span> <span class="st">&quot;^(auto|exported|all)$|</span><span class="sc">\\</span><span class="st">.R$&quot;</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a>    <span class="cf">if</span> (<span class="fu">all</span>(dim <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">&amp;</span> <span class="fu">is.null</span>(choose_names)) {</span>
-<span id="cb8-7"><a href="#cb8-7"></a>        <span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">grepl</span>(opt_regex, choose)))</span>
-<span id="cb8-8"><a href="#cb8-8"></a>        yaml2<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="fu">lapply</span>(choose, <span class="cf">function</span>(x) {</span>
-<span id="cb8-9"><a href="#cb8-9"></a>            <span class="fu">list</span>(<span class="at">file =</span> x)</span>
-<span id="cb8-10"><a href="#cb8-10"></a>        })</span>
-<span id="cb8-11"><a href="#cb8-11"></a>    }</span>
-<span id="cb8-12"><a href="#cb8-12"></a>    <span class="cf">else</span> {</span>
-<span id="cb8-13"><a href="#cb8-13"></a>        <span class="cf">if</span> (<span class="fu">any</span>(choose_names <span class="sc">==</span> <span class="st">&quot;&quot;</span>)) {</span>
-<span id="cb8-14"><a href="#cb8-14"></a>            needs_name <span class="ot">&lt;-</span> <span class="fu">which</span>(choose_names <span class="sc">==</span> <span class="st">&quot;&quot;</span> <span class="sc">&amp;</span> dim <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb8-15"><a href="#cb8-15"></a>            <span class="fu">names</span>(choose)[needs_name] <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">sapply</span>(choose, </span>
-<span id="cb8-16"><a href="#cb8-16"></a>                unlist)[needs_name])</span>
-<span id="cb8-17"><a href="#cb8-17"></a>            choose[needs_name] <span class="ot">&lt;-</span> <span class="st">&quot;all&quot;</span></span>
-<span id="cb8-18"><a href="#cb8-18"></a>            choose_names <span class="ot">&lt;-</span> <span class="fu">names</span>(choose)</span>
-<span id="cb8-19"><a href="#cb8-19"></a>        }</span>
-<span id="cb8-20"><a href="#cb8-20"></a>        <span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">grepl</span>(opt_regex, choose_names)))</span>
-<span id="cb8-21"><a href="#cb8-21"></a>        yaml2<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="fu">mapply</span>(<span class="cf">function</span>(x, y) {</span>
-<span id="cb8-22"><a href="#cb8-22"></a>            <span class="fu">list</span>(<span class="at">file =</span> x, <span class="at">slides =</span> y)</span>
-<span id="cb8-23"><a href="#cb8-23"></a>        }, choose_names, choose, <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span>, <span class="at">USE.NAMES =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-24"><a href="#cb8-24"></a>    }</span>
-<span id="cb8-25"><a href="#cb8-25"></a>    yaml <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">list</span>(yaml, yaml2), <span class="at">recursive =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-26"><a href="#cb8-26"></a>    <span class="fu">return</span>(yaml)</span>
-<span id="cb8-27"><a href="#cb8-27"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-2"><a href="#cb8-2"></a>  yaml2 <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  dim <span class="ot">&lt;-</span> <span class="fu">vapply</span>(choose, length, <span class="at">FUN.VALUE =</span> <span class="dv">1</span>)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  choose_names <span class="ot">&lt;-</span> <span class="fu">names</span>(choose)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a>  opt_regex <span class="ot">&lt;-</span> <span class="st">&quot;^(auto|exported|all)$|</span><span class="sc">\\</span><span class="st">.R$&quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="cf">if</span> (<span class="fu">all</span>(dim <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">&amp;</span> <span class="fu">is.null</span>(choose_names)) {</span>
+<span id="cb8-9"><a href="#cb8-9"></a>    <span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">grepl</span>(opt_regex, choose)))</span>
+<span id="cb8-10"><a href="#cb8-10"></a>    yaml2<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="fu">lapply</span>(choose, \(x) { <span class="fu">list</span>(<span class="at">file =</span> x) })</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  } <span class="cf">else</span> {</span>
+<span id="cb8-12"><a href="#cb8-12"></a>    <span class="cf">if</span> (<span class="fu">any</span>(choose_names <span class="sc">==</span> <span class="st">&quot;&quot;</span>)) {</span>
+<span id="cb8-13"><a href="#cb8-13"></a>      needs_name <span class="ot">&lt;-</span> <span class="fu">which</span>(choose_names <span class="sc">==</span> <span class="st">&quot;&quot;</span> <span class="sc">&amp;</span> dim <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb8-14"><a href="#cb8-14"></a>      <span class="fu">names</span>(choose)[needs_name] <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">sapply</span>(choose, unlist)[needs_name])</span>
+<span id="cb8-15"><a href="#cb8-15"></a>      choose[needs_name] <span class="ot">&lt;-</span> <span class="st">&quot;all&quot;</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a>      choose_names <span class="ot">&lt;-</span> <span class="fu">names</span>(choose)</span>
+<span id="cb8-17"><a href="#cb8-17"></a>    }</span>
+<span id="cb8-18"><a href="#cb8-18"></a>    <span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">grepl</span>(opt_regex, choose_names)))</span>
+<span id="cb8-19"><a href="#cb8-19"></a>    yaml2<span class="sc">$</span>functions <span class="ot">&lt;-</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>      <span class="fu">mapply</span>(\(x, y) {</span>
+<span id="cb8-21"><a href="#cb8-21"></a>        <span class="fu">list</span>(<span class="at">file =</span> x, <span class="at">slides =</span> y)</span>
+<span id="cb8-22"><a href="#cb8-22"></a>      }, choose_names, choose, <span class="at">SIMPLIFY =</span> <span class="cn">FALSE</span>, <span class="at">USE.NAMES =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-23"><a href="#cb8-23"></a>  }</span>
+<span id="cb8-24"><a href="#cb8-24"></a></span>
+<span id="cb8-25"><a href="#cb8-25"></a></span>
+<span id="cb8-26"><a href="#cb8-26"></a>  yaml <span class="ot">&lt;-</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>    <span class="fu">list</span>(yaml, yaml2) <span class="sc">|&gt;</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a>    <span class="fu">unlist</span>(<span class="at">recursive =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-29"><a href="#cb8-29"></a></span>
+<span id="cb8-30"><a href="#cb8-30"></a>  <span class="fu">return</span>(yaml)</span>
+<span id="cb8-31"><a href="#cb8-31"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="footer footer-default">
 

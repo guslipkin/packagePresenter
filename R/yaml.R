@@ -8,7 +8,8 @@
 #' @param choose_functions A list of file or function names
 #' @param choose_datasets A vector of dataset names
 #'
-#' @return This will not fill the file, simply create it.
+#' @return This will create the file and write to it, then return the
+#'  file path.
 #' @export
 create_yaml <- function(
     path = getwd(),
