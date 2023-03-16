@@ -28,7 +28,9 @@ When pointed at the root directory of an R Package Project, this
 library(pkgslides)
 ```
 
-# Create a Revealjs Presentation with Quarto
+# build_presentation.R
+
+## Create a Revealjs Presentation with Quarto
 
 ::: {.r-fit-text}
 
@@ -61,7 +63,8 @@ it ends with a `file_name.qmd`
 :::
 
 
-## `build_presentation.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -87,11 +90,16 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
   contents <- .get_roxygen(package$path, yaml)
 
-  r_files <- paste0(package$path, "/R")
-  package_functions <- list.files(r_files, pattern = "\\.R$")
+  function_contents <- .get_functions(contents$functions, yaml)
+  r_files <-
+    sapply(contents$functions, \(b) .get_file_from_path(b$file))
   function_contents <-
-    .get_functions(contents$functions, yaml) |>
-    lapply(.collate_functions, chunk_opt) |>
+    r_files |>
+    unique() |>
+    lapply(
+      .construct_verticals,
+      r_files, function_contents, chunk_opt
+    ) |>
     unlist()
 
   data_contents <-
@@ -118,7 +126,7 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
 :::
 
-# `.find_file`
+## `.find_file`
 
 ::: {.r-fit-text}
 
@@ -139,7 +147,8 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 :::
 
 
-## `build_presentation.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -161,7 +170,7 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
 :::
 
-# `.find_package`
+## `.find_package`
 
 ::: {.r-fit-text}
 
@@ -181,7 +190,8 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 :::
 
 
-## `build_presentation.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -228,13 +238,16 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
 :::
 
-# Create `_pkgslides.yml`
+# yaml.R
+
+## Create `_pkgslides.yml`
 
 ::: {.r-fit-text}
 
 - **Topic:** `create_yaml`
 
-- **Return:** This will not fill the file, simply create it.
+- **Return:** This will create the file and write to it, then return the
+file path.
 
 :::
 
@@ -254,7 +267,8 @@ not end in a slash of any kind.
 :::
 
 
-## `yaml.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -304,7 +318,7 @@ create_yaml <- function(
 
 :::
 
-# Parse `_pkgslides.yml`
+## Parse `_pkgslides.yml`
 
 ::: {.r-fit-text}
 
@@ -324,7 +338,8 @@ create_yaml <- function(
 :::
 
 
-## `yaml.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -343,7 +358,7 @@ create_yaml <- function(
 
 :::
 
-# Fill an Incomplete `_pkgslides.yml`
+## Fill an Incomplete `_pkgslides.yml`
 
 ::: {.r-fit-text}
 
@@ -363,7 +378,8 @@ create_yaml <- function(
 :::
 
 
-## `yaml.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -393,7 +409,7 @@ create_yaml <- function(
 
 :::
 
-# `.set_as_true`
+## `.set_as_true`
 
 ::: {.r-fit-text}
 
@@ -415,7 +431,8 @@ create_yaml <- function(
 :::
 
 
-## `yaml.R`
+
+## Code
 
 ::: {.r-fit-text}
 
@@ -435,7 +452,7 @@ create_yaml <- function(
 
 :::
 
-# `.process_choose_functions`
+## `.process_choose_functions`
 
 ::: {.r-fit-text}
 
@@ -457,7 +474,8 @@ function
 :::
 
 
-## `yaml.R`
+
+## Code
 
 ::: {.r-fit-text}
 

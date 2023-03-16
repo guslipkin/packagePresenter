@@ -75,8 +75,8 @@
 #'
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
-.collate_functions <- function(function_details, chunk_opt) {
-  if (function_details$title == "Title") {
+.collate_functions <- function(function_details, chunk_opt, standalone = FALSE) {
+  if (is.null(function_details$title) | function_details$title == "Title") {
     function_details$title <- glue::glue("`{function_details$topic}`")
   }
 
@@ -110,8 +110,9 @@
       collapse = ""
     )
 
+  h_level <- if (standalone) "#" else "##"
   function_details$title <- .collate_slide(
-      glue::glue("\n\n# {function_details$title}"),
+      glue::glue("\n\n{h_level} {function_details$title}"),
       title_details
     )
 
@@ -133,7 +134,7 @@
     )
 
   function_details$code <- .collate_slide(
-    glue::glue("\n\n## `{function_details$file}`"),
+    "\n\n## Code",
     function_details$code,
     "```{.r}\n{{content}\n```",
     code = TRUE
@@ -146,6 +147,34 @@
     function_details$code
   )
   return(function_contents)
+}
+
+#' Title
+#'
+#' @param r The R source file for which a vertical is created
+#' @param r_files A vector of unique R source file names
+#' @param function_contents A list of roxygen2 blocks for the `r` file
+#' @param chunk_opt "eval" or "echo" for a chunk option. This is
+#'   determined by the install status of the chosen package.
+#'
+#' @return A character vector of properties formatted for writing to a file
+.construct_verticals <- function(r, r_files, function_contents, chunk_opt) {
+  b <- which(r_files == r)
+  standalone <- if(length(b) == 1) TRUE else FALSE
+  if (length(b) == 1) {
+    standalone <- TRUE
+    header <- ""
+  } else {
+    standalone <- FALSE
+    header <- glue::glue("\n\n# {r}")
+  }
+  functions <-
+    function_contents[b] |>
+    lapply(.collate_functions, chunk_opt, standalone) |>
+    unlist()
+  functions <- c(header, functions)
+
+  return(functions)
 }
 
 #' Title

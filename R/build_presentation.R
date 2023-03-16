@@ -38,11 +38,16 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
   contents <- .get_roxygen(package$path, yaml)
 
-  r_files <- paste0(package$path, "/R")
-  package_functions <- list.files(r_files, pattern = "\\.R$")
+  function_contents <- .get_functions(contents$functions, yaml)
+  r_files <-
+    sapply(contents$functions, \(b) .get_file_from_path(b$file))
   function_contents <-
-    .get_functions(contents$functions, yaml) |>
-    lapply(.collate_functions, chunk_opt) |>
+    r_files |>
+    unique() |>
+    lapply(
+      .construct_verticals,
+      r_files, function_contents, chunk_opt
+    ) |>
     unlist()
 
   data_contents <-

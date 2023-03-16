@@ -1222,8 +1222,12 @@ margin-right: 0; }
 </div>
 </section>
 <section>
-<section id="create-a-revealjs-presentation-with-quarto" class="title-slide slide level1 center">
-<h1>Create a Revealjs Presentation with Quarto</h1>
+<section id="build_presentation.r" class="title-slide slide level1 center">
+<h1>build_presentation.R</h1>
+
+</section>
+<section id="create-a-revealjs-presentation-with-quarto" class="slide level2">
+<h2>Create a Revealjs Presentation with Quarto</h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>build_presentation</code></p></li>
@@ -1242,8 +1246,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="build_presentation.r" class="slide level2">
-<h2><code>build_presentation.R</code></h2>
+<section id="code" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>build_presentation <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">package =</span> <span class="fu">getwd</span>(), <span class="at">file =</span> <span class="cn">NULL</span>, <span class="at">yaml =</span> <span class="fu">create_yaml</span>()) {</span>
 <span id="cb1-2"><a href="#cb1-2"></a></span>
@@ -1266,38 +1270,42 @@ margin-right: 0; }
 <span id="cb1-19"><a href="#cb1-19"></a></span>
 <span id="cb1-20"><a href="#cb1-20"></a>  contents <span class="ot">&lt;-</span> <span class="fu">.get_roxygen</span>(package<span class="sc">$</span>path, yaml)</span>
 <span id="cb1-21"><a href="#cb1-21"></a></span>
-<span id="cb1-22"><a href="#cb1-22"></a>  r_files <span class="ot">&lt;-</span> <span class="fu">paste0</span>(package<span class="sc">$</span>path, <span class="st">&quot;/R&quot;</span>)</span>
-<span id="cb1-23"><a href="#cb1-23"></a>  package_functions <span class="ot">&lt;-</span> <span class="fu">list.files</span>(r_files, <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.R$&quot;</span>)</span>
-<span id="cb1-24"><a href="#cb1-24"></a>  function_contents <span class="ot">&lt;-</span></span>
-<span id="cb1-25"><a href="#cb1-25"></a>    <span class="fu">.get_functions</span>(contents<span class="sc">$</span>functions, yaml) <span class="sc">|&gt;</span></span>
-<span id="cb1-26"><a href="#cb1-26"></a>    <span class="fu">lapply</span>(.collate_functions, chunk_opt) <span class="sc">|&gt;</span></span>
-<span id="cb1-27"><a href="#cb1-27"></a>    <span class="fu">unlist</span>()</span>
-<span id="cb1-28"><a href="#cb1-28"></a></span>
-<span id="cb1-29"><a href="#cb1-29"></a>  data_contents <span class="ot">&lt;-</span></span>
-<span id="cb1-30"><a href="#cb1-30"></a>    <span class="fu">.get_datasets</span>(contents<span class="sc">$</span>datasets, yaml) <span class="sc">|&gt;</span></span>
-<span id="cb1-31"><a href="#cb1-31"></a>    <span class="fu">lapply</span>(.collate_datasets) <span class="sc">|&gt;</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a>  function_contents <span class="ot">&lt;-</span> <span class="fu">.get_functions</span>(contents<span class="sc">$</span>functions, yaml)</span>
+<span id="cb1-23"><a href="#cb1-23"></a>  r_files <span class="ot">&lt;-</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>    <span class="fu">sapply</span>(contents<span class="sc">$</span>functions, \(b) <span class="fu">.get_file_from_path</span>(b<span class="sc">$</span>file))</span>
+<span id="cb1-25"><a href="#cb1-25"></a>  function_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>    r_files <span class="sc">|&gt;</span></span>
+<span id="cb1-27"><a href="#cb1-27"></a>    <span class="fu">unique</span>() <span class="sc">|&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>    <span class="fu">lapply</span>(</span>
+<span id="cb1-29"><a href="#cb1-29"></a>      .construct_verticals,</span>
+<span id="cb1-30"><a href="#cb1-30"></a>      r_files, function_contents, chunk_opt</span>
+<span id="cb1-31"><a href="#cb1-31"></a>    ) <span class="sc">|&gt;</span></span>
 <span id="cb1-32"><a href="#cb1-32"></a>    <span class="fu">unlist</span>()</span>
 <span id="cb1-33"><a href="#cb1-33"></a></span>
-<span id="cb1-34"><a href="#cb1-34"></a>  file_contents <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb1-35"><a href="#cb1-35"></a>    title_contents,</span>
-<span id="cb1-36"><a href="#cb1-36"></a>    package_contents,</span>
-<span id="cb1-37"><a href="#cb1-37"></a>    function_contents,</span>
-<span id="cb1-38"><a href="#cb1-38"></a>    data_contents</span>
-<span id="cb1-39"><a href="#cb1-39"></a>  )</span>
-<span id="cb1-40"><a href="#cb1-40"></a></span>
-<span id="cb1-41"><a href="#cb1-41"></a>  <span class="fu">print</span>(file)</span>
-<span id="cb1-42"><a href="#cb1-42"></a>  <span class="fu">file.create</span>(file)</span>
-<span id="cb1-43"><a href="#cb1-43"></a>  fileConn <span class="ot">&lt;-</span> <span class="fu">file</span>(file)</span>
-<span id="cb1-44"><a href="#cb1-44"></a>  <span class="fu">writeLines</span>(file_contents, fileConn)</span>
-<span id="cb1-45"><a href="#cb1-45"></a>  <span class="fu">close</span>(fileConn)</span>
-<span id="cb1-46"><a href="#cb1-46"></a></span>
-<span id="cb1-47"><a href="#cb1-47"></a>  quarto<span class="sc">::</span><span class="fu">quarto_render</span>(file)</span>
-<span id="cb1-48"><a href="#cb1-48"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-34"><a href="#cb1-34"></a>  data_contents <span class="ot">&lt;-</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a>    <span class="fu">.get_datasets</span>(contents<span class="sc">$</span>datasets, yaml) <span class="sc">|&gt;</span></span>
+<span id="cb1-36"><a href="#cb1-36"></a>    <span class="fu">lapply</span>(.collate_datasets) <span class="sc">|&gt;</span></span>
+<span id="cb1-37"><a href="#cb1-37"></a>    <span class="fu">unlist</span>()</span>
+<span id="cb1-38"><a href="#cb1-38"></a></span>
+<span id="cb1-39"><a href="#cb1-39"></a>  file_contents <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-40"><a href="#cb1-40"></a>    title_contents,</span>
+<span id="cb1-41"><a href="#cb1-41"></a>    package_contents,</span>
+<span id="cb1-42"><a href="#cb1-42"></a>    function_contents,</span>
+<span id="cb1-43"><a href="#cb1-43"></a>    data_contents</span>
+<span id="cb1-44"><a href="#cb1-44"></a>  )</span>
+<span id="cb1-45"><a href="#cb1-45"></a></span>
+<span id="cb1-46"><a href="#cb1-46"></a>  <span class="fu">print</span>(file)</span>
+<span id="cb1-47"><a href="#cb1-47"></a>  <span class="fu">file.create</span>(file)</span>
+<span id="cb1-48"><a href="#cb1-48"></a>  fileConn <span class="ot">&lt;-</span> <span class="fu">file</span>(file)</span>
+<span id="cb1-49"><a href="#cb1-49"></a>  <span class="fu">writeLines</span>(file_contents, fileConn)</span>
+<span id="cb1-50"><a href="#cb1-50"></a>  <span class="fu">close</span>(fileConn)</span>
+<span id="cb1-51"><a href="#cb1-51"></a></span>
+<span id="cb1-52"><a href="#cb1-52"></a>  quarto<span class="sc">::</span><span class="fu">quarto_render</span>(file)</span>
+<span id="cb1-53"><a href="#cb1-53"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="find_file" class="title-slide slide level1 center">
-<h1><code>.find_file</code></h1>
+</section>
+<section id="find_file" class="slide level2">
+<h2><code>.find_file</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.find_file</code></p></li>
@@ -1314,8 +1322,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="build_presentation.r-1" class="slide level2">
-<h2><code>build_presentation.R</code></h2>
+<section id="code-1" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>.find_file <span class="ot">&lt;-</span> <span class="cf">function</span>(package, file) {</span>
 <span id="cb2-2"><a href="#cb2-2"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(file)) {</span>
@@ -1331,10 +1339,9 @@ margin-right: 0; }
 <span id="cb2-12"><a href="#cb2-12"></a>  <span class="fu">return</span>(file)</span>
 <span id="cb2-13"><a href="#cb2-13"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="find_package" class="title-slide slide level1 center">
-<h1><code>.find_package</code></h1>
+</section>
+<section id="find_package" class="slide level2">
+<h2><code>.find_package</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.find_package</code></p></li>
@@ -1350,8 +1357,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="build_presentation.r-2" class="slide level2">
-<h2><code>build_presentation.R</code></h2>
+<section id="code-2" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>.find_package <span class="ot">&lt;-</span> <span class="cf">function</span>(package) {</span>
 <span id="cb3-2"><a href="#cb3-2"></a>  <span class="cf">if</span> (package <span class="sc">==</span> <span class="fu">getwd</span>() <span class="sc">|</span> <span class="fu">dir.exists</span>(package)) {</span>
@@ -1394,12 +1401,16 @@ margin-right: 0; }
 </div>
 </section></section>
 <section>
-<section id="create-_pkgslides.yml" class="title-slide slide level1 center">
-<h1>Create <code>_pkgslides.yml</code></h1>
+<section id="yaml.r" class="title-slide slide level1 center">
+<h1>yaml.R</h1>
+
+</section>
+<section id="create-_pkgslides.yml" class="slide level2">
+<h2>Create <code>_pkgslides.yml</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>create_yaml</code></p></li>
-<li><p><strong>Return:</strong> This will not fill the file, simply create it.</p></li>
+<li><p><strong>Return:</strong> This will create the file and write to it, then return the file path.</p></li>
 </ul>
 </div>
 </section>
@@ -1416,8 +1427,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="yaml.r" class="slide level2">
-<h2><code>yaml.R</code></h2>
+<section id="code-3" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>create_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
 <span id="cb4-2"><a href="#cb4-2"></a>    <span class="at">path =</span> <span class="fu">getwd</span>(),</span>
@@ -1461,10 +1472,9 @@ margin-right: 0; }
 <span id="cb4-40"><a href="#cb4-40"></a>  <span class="fu">return</span>(file)</span>
 <span id="cb4-41"><a href="#cb4-41"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="parse-_pkgslides.yml" class="title-slide slide level1 center">
-<h1>Parse <code>_pkgslides.yml</code></h1>
+</section>
+<section id="parse-_pkgslides.yml" class="slide level2">
+<h2>Parse <code>_pkgslides.yml</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.parse_yaml</code></p></li>
@@ -1480,8 +1490,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="yaml.r-1" class="slide level2">
-<h2><code>yaml.R</code></h2>
+<section id="code-4" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>.parse_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(file) {</span>
 <span id="cb5-2"><a href="#cb5-2"></a>  <span class="cf">if</span> (<span class="fu">file.exists</span>(file)) {</span>
@@ -1494,10 +1504,9 @@ margin-right: 0; }
 <span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">return</span>(yaml)</span>
 <span id="cb5-10"><a href="#cb5-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="fill-an-incomplete-_pkgslides.yml" class="title-slide slide level1 center">
-<h1>Fill an Incomplete <code>_pkgslides.yml</code></h1>
+</section>
+<section id="fill-an-incomplete-_pkgslides.yml" class="slide level2">
+<h2>Fill an Incomplete <code>_pkgslides.yml</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.check_yaml</code></p></li>
@@ -1513,8 +1522,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="yaml.r-2" class="slide level2">
-<h2><code>yaml.R</code></h2>
+<section id="code-5" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>.check_yaml <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml) {</span>
 <span id="cb6-2"><a href="#cb6-2"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(yaml<span class="sc">$</span>functions)) { yaml<span class="sc">$</span>functions <span class="ot">&lt;-</span> <span class="st">&quot;auto&quot;</span> }</span>
@@ -1538,10 +1547,9 @@ margin-right: 0; }
 <span id="cb6-20"><a href="#cb6-20"></a>  <span class="fu">return</span>(yaml)</span>
 <span id="cb6-21"><a href="#cb6-21"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="set_as_true" class="title-slide slide level1 center">
-<h1><code>.set_as_true</code></h1>
+</section>
+<section id="set_as_true" class="slide level2">
+<h2><code>.set_as_true</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.set_as_true</code></p></li>
@@ -1559,8 +1567,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="yaml.r-3" class="slide level2">
-<h2><code>yaml.R</code></h2>
+<section id="code-6" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>.set_as_true <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, type, options) {</span>
 <span id="cb7-2"><a href="#cb7-2"></a>  requested <span class="ot">&lt;-</span> <span class="fu">names</span>(yaml<span class="sc">$</span>format[[type]])</span>
@@ -1574,10 +1582,9 @@ margin-right: 0; }
 <span id="cb7-10"><a href="#cb7-10"></a>  <span class="fu">return</span>(yaml)</span>
 <span id="cb7-11"><a href="#cb7-11"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section>
-<section>
-<section id="process_choose_functions" class="title-slide slide level1 center">
-<h1><code>.process_choose_functions</code></h1>
+</section>
+<section id="process_choose_functions" class="slide level2">
+<h2><code>.process_choose_functions</code></h2>
 <div class="r-fit-text">
 <ul>
 <li><p><strong>Topic:</strong> <code>.process_choose_functions</code></p></li>
@@ -1594,8 +1601,8 @@ margin-right: 0; }
 </ul>
 </div>
 </section>
-<section id="yaml.r-4" class="slide level2">
-<h2><code>yaml.R</code></h2>
+<section id="code-7" class="slide level2">
+<h2>Code</h2>
 <div class="r-fit-text">
 <div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>.process_choose_functions <span class="ot">&lt;-</span> <span class="cf">function</span>(yaml, choose) {</span>
 <span id="cb8-2"><a href="#cb8-2"></a>  yaml2 <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>

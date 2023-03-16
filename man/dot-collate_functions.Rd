@@ -4,7 +4,7 @@
 \alias{.collate_functions}
 \title{Title}
 \usage{
-.collate_functions(function_details, chunk_opt)
+.collate_functions(function_details, chunk_opt, standalone = FALSE)
 }
 \arguments{
 \item{function_details}{A list of function details from `.get_function_tags`}
