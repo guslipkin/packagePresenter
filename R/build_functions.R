@@ -76,7 +76,7 @@
 #' @return A character vector of properties formatted for writing to a file
 #' @keywords internal
 .collate_functions <- function(function_details, chunk_opt, standalone = FALSE) {
-  if (is.null(function_details$title) | function_details$title == "Title") {
+  if (length(function_details$title) == 0 || function_details$title == "Title") {
     function_details$title <- glue::glue("`{function_details$topic}`")
   }
 
