@@ -158,6 +158,7 @@
 #'   determined by the install status of the chosen package.
 #'
 #' @return A character vector of properties formatted for writing to a file
+#' @keywords internal
 .construct_verticals <- function(r, r_files, function_contents, chunk_opt) {
   b <- which(r_files == r)
   standalone <- if(length(b) == 1) TRUE else FALSE

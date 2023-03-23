@@ -22,3 +22,4 @@ A character vector of properties formatted for writing to a file
 \description{
 Title
 }
+\keyword{internal}
