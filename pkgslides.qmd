@@ -8,6 +8,7 @@ format:
     navigation-mode: vertical
     self-contained: true
     scrollable: true
+    footer: Gus Lipkin [aut, cre]
 ---
 
 ## Automatically Generate Presentations for Source Code
@@ -27,6 +28,21 @@ When pointed at the root directory of an R Package Project, this
 #| echo: false
 library(pkgslides)
 ```
+<script type='text/javascript' charset='utf-8'>
+  function add_author_footer() {
+    Reveal.on( 'slidechanged' , event => {
+        let footer = document.querySelector('div.footer p');
+        if (event.currentSlide.matches('#title-slide')) {
+          footer.innerHTML = 'Gus Lipkin [aut, cre]';
+        } else {
+          footer.innerHTML = '';
+        }
+      });
+  };
+  window.addEventListener('load', (event) => {
+    add_author_footer();
+  });
+</script>
 
 # build_presentation.R
 
@@ -80,12 +96,14 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
     chunk_opt <- "echo"
   } else { chunk_opt <- "eval" }
 
+  credits <- .get_credits(package$path)
+
   title_contents <-
-    .get_title(package$path) |>
+    .get_title(package$path, credits) |>
     .collate_title(yaml)
 
   package_contents <-
-    .get_description(package$path) |>
+    .get_description(package$path, credits) |>
     .collate_description(chunk_opt)
 
   contents <- .get_roxygen(package$path, yaml)

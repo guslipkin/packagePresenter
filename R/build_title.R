@@ -5,13 +5,14 @@
 #' @return A list of roxygen2 properties for the package's DESCRIPTION file used
 #'   to create the title slide
 #' @keywords internal
-.get_title <- function(package) {
+.get_title <- function(package, credits) {
   lib <- .get_desc(package, "Package")
   version <- .get_desc(package, "Version")
 
   title_details <- list(
     "lib" = lib,
-    "version" = version
+    "version" = version,
+    "credits" = credits
   )
   return(title_details)
 }
@@ -35,6 +36,7 @@
     "    navigation-mode: vertical",
     "    self-contained: true",
     "    scrollable: true",
+    "    footer: {title_details$credits}",
     "---",
     .sep = "\n"
   )

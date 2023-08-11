@@ -28,12 +28,14 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
     chunk_opt <- "echo"
   } else { chunk_opt <- "eval" }
 
+  credits <- .get_credits(package$path)
+
   title_contents <-
-    .get_title(package$path) |>
+    .get_title(package$path, credits) |>
     .collate_title(yaml)
 
   package_contents <-
-    .get_description(package$path) |>
+    .get_description(package$path, credits) |>
     .collate_description(chunk_opt)
 
   contents <- .get_roxygen(package$path, yaml)

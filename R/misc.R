@@ -24,6 +24,30 @@
 
 #' Title
 #'
+#' @inheritParams build_presentation
+#'
+#' @return A character vector of author and maintainer details
+#' @keywords internal
+.get_credits <- function(package) {
+  c("aut", "cre") |>
+    lapply(\(x) {
+      x <-
+        x |>
+        desc::desc_get_author(file = package) |>
+        as.character()
+      # chartr("<>", "()", x)
+    }) |>
+    unlist() |>
+    unique() |>
+    paste0(collapse = ", ") |>
+    strsplit(" <|>") |>
+    unlist() |>
+    sapply(\(x) if ("@" %in% unlist(strsplit(x, ""))) "" else x) |>
+    paste0(collapse = "")
+}
+
+#' Title
+#'
 #' @param block A roxygen2 block
 #' @param tag A character vector of roxygen2 block tag names
 #'
