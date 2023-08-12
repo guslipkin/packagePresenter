@@ -35,14 +35,19 @@
         x |>
         desc::desc_get_author(file = package) |>
         as.character()
-      # chartr("<>", "()", x)
     }) |>
     unlist() |>
     unique() |>
     paste0(collapse = ", ") |>
-    strsplit(" <|>") |>
+    strsplit(" \\(?<|>\\)?") |>
     unlist() |>
-    sapply(\(x) if ("@" %in% unlist(strsplit(x, ""))) "" else x) |>
+    sapply(\(x) {
+      s <-
+        x |>
+        strsplit("") |>
+        unlist()
+      if ("@" %in% s | ":" %in% s) "" else x
+    }) |>
     paste0(collapse = "")
 }
 
