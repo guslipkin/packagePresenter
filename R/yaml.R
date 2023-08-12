@@ -98,7 +98,7 @@ create_yaml <- function(
   return(yaml)
 }
 
-#' Title
+#' Set Empty Values as True
 #'
 #' @param yaml A yaml file as a list
 #' @param type "functions" or "datasets"
@@ -118,7 +118,7 @@ create_yaml <- function(
   return(yaml)
 }
 
-#' Title
+#' Process Choose Functions
 #'
 #' @param yaml A list representing a yaml file
 #' @param choose The list passed to `choose_functions` in the `create_yaml`

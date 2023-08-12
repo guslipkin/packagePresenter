@@ -2,7 +2,7 @@
 % Please edit documentation in R/yaml.R
 \name{.set_as_true}
 \alias{.set_as_true}
-\title{Title}
+\title{Set Empty Values as True}
 \usage{
 .set_as_true(yaml, type, options)
 }
@@ -17,6 +17,6 @@
 A yaml where non-included options are set to TRUE
 }
 \description{
-Title
+Set Empty Values as True
 }
 \keyword{internal}

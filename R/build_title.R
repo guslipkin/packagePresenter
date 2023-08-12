@@ -1,4 +1,4 @@
-#' Title
+#' Get Title
 #'
 #' @inheritParams build_presentation
 #'
@@ -17,7 +17,7 @@
   return(title_details)
 }
 
-#' Title
+#' Collate Title
 #'
 #' @param package_details A list of function details from `.get_title`
 #' @param yaml A list of properties from `.parse_yaml()`

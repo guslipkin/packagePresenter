@@ -22,9 +22,6 @@
     <loc>/index.html</loc>
   </url>
   <url>
-    <loc>/pkgslides.html</loc>
-  </url>
-  <url>
     <loc>/reference/build_presentation.html</loc>
   </url>
   <url>
@@ -86,6 +83,9 @@
   </url>
   <url>
     <loc>/reference/dot-fit_content.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-get_credits.html</loc>
   </url>
   <url>
     <loc>/reference/dot-get_dataset_tags.html</loc>

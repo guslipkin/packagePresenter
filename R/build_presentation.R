@@ -94,7 +94,7 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
   return(file)
 }
 
-#' Title
+#' Tries to Find or Download a Package
 #'
 #' @param package A package name or file path to a package source
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/yaml.R
 \name{.process_choose_functions}
 \alias{.process_choose_functions}
-\title{Title}
+\title{Process Choose Functions}
 \usage{
 .process_choose_functions(yaml, choose)
 }
@@ -16,6 +16,6 @@ function}
 A list representing a yaml file
 }
 \description{
-Title
+Process Choose Functions
 }
 \keyword{internal}

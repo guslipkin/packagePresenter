@@ -188,7 +188,7 @@ build_presentation <- function(package = getwd(), file = NULL, yaml = create_yam
 
 :::
 
-## `.find_package`
+## Tries to Find or Download a Package
 
 ::: {.r-fit-text}
 
@@ -427,7 +427,7 @@ create_yaml <- function(
 
 :::
 
-## `.set_as_true`
+## Set Empty Values as True
 
 ::: {.r-fit-text}
 
@@ -470,7 +470,7 @@ create_yaml <- function(
 
 :::
 
-## `.process_choose_functions`
+## Process Choose Functions
 
 ::: {.r-fit-text}
 

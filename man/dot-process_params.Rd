@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_functions.R
 \name{.process_params}
 \alias{.process_params}
-\title{Title}
+\title{Process Function Parameters from roxygen2}
 \usage{
 .process_params(param)
 }
@@ -14,6 +14,6 @@ A length-one character vector of parameters formatted as a bulleted
   list for writing to a file
 }
 \description{
-Title
+Process Function Parameters from roxygen2
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_functions.R
 \name{.get_functions}
 \alias{.get_functions}
-\title{Title}
+\title{Get Functions}
 \usage{
 .get_functions(functions, yaml)
 }
@@ -15,6 +15,6 @@
 A list of details ready to be collated into slides
 }
 \description{
-Title
+Get Functions
 }
 \keyword{internal}

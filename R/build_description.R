@@ -1,4 +1,4 @@
-#' Title
+#' Get Description
 #'
 #' @inheritParams build_presentation
 #'
@@ -18,7 +18,7 @@
   )
 }
 
-#' Title
+#' Collate Description
 #'
 #' @param package_details A list of function details from `.get_description`
 #'

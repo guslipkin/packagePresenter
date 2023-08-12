@@ -1,4 +1,4 @@
-#' Title
+#' Get File From Path
 #'
 #' @param path A file path
 #'
@@ -22,7 +22,7 @@
   desc::desc_get(tag, glue::glue("{package}/DESCRIPTION"))
 }
 
-#' Title
+#' Get Credits
 #'
 #' @inheritParams build_presentation
 #'
@@ -51,7 +51,7 @@
     paste0(collapse = "")
 }
 
-#' Title
+#' Get a roxygen2 Tag
 #'
 #' @param block A roxygen2 block
 #' @param tag A character vector of roxygen2 block tag names
@@ -62,7 +62,7 @@
   roxygen2::block_get_tag_value(block, tag)
 }
 
-#' Title
+#' Drop Options
 #'
 #' @param item A list item from `.get_*_tags`
 #' @param item_name The name of a list item from `.get_*_tags`
@@ -138,7 +138,7 @@
   glue::glue("\n\n::: {.r-fit-text}\n\n{{content}\n\n:::", .open = "{{")
 }
 
-#' Title
+#' Drops Null Values From a List
 #'
 #' @param l A list
 #'

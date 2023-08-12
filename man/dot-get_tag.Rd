@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{.get_tag}
 \alias{.get_tag}
-\title{Title}
+\title{Get a roxygen2 Tag}
 \usage{
 .get_tag(block, tag)
 }
@@ -15,6 +15,6 @@
 Returns the raw text of the desired tag
 }
 \description{
-Title
+Get a roxygen2 Tag
 }
 \keyword{internal}

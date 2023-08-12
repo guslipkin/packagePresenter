@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_datasets.R
 \name{.get_datasets}
 \alias{.get_datasets}
-\title{Title}
+\title{Get Dataset Information}
 \usage{
 .get_datasets(datasets, yaml)
 }
@@ -15,6 +15,6 @@
 A list of details ready to be collated into slides
 }
 \description{
-Title
+Get Dataset Information
 }
 \keyword{internal}

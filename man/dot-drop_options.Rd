@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{.drop_options}
 \alias{.drop_options}
-\title{Title}
+\title{Drop Options}
 \usage{
 .drop_options(item, item_name, yaml, type)
 }
@@ -17,6 +17,6 @@
 Either `item` or `NULL`
 }
 \description{
-Title
+Drop Options
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_presentation.R
 \name{.find_package}
 \alias{.find_package}
-\title{Title}
+\title{Tries to Find or Download a Package}
 \usage{
 .find_package(package)
 }
@@ -13,6 +13,6 @@
 A path to a package source
 }
 \description{
-Title
+Tries to Find or Download a Package
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_datasets.R
 \name{.collate_datasets}
 \alias{.collate_datasets}
-\title{Title}
+\title{Collate Datasets}
 \usage{
 .collate_datasets(dataset_details)
 }
@@ -13,6 +13,6 @@
 A character vector of properties formatted for writing to a file
 }
 \description{
-Title
+Collate Datasets
 }
 \keyword{internal}

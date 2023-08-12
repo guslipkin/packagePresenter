@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_datasets.R
 \name{.get_dataset_tags}
 \alias{.get_dataset_tags}
-\title{Title}
+\title{Get Dataset Tags}
 \usage{
 .get_dataset_tags(block, yaml)
 }
@@ -15,6 +15,6 @@
 A list of roxygen2 tags for a specific source file
 }
 \description{
-Title
+Get Dataset Tags
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_description.R
 \name{.collate_description}
 \alias{.collate_description}
-\title{Title}
+\title{Collate Description}
 \usage{
 .collate_description(package_details, chunk_opt)
 }
@@ -13,6 +13,6 @@
 A character vector of properties formatted for writing to a file
 }
 \description{
-Title
+Collate Description
 }
 \keyword{internal}

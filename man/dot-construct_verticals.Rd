@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_functions.R
 \name{.construct_verticals}
 \alias{.construct_verticals}
-\title{Title}
+\title{Construct Vertical Slides}
 \usage{
 .construct_verticals(r, r_files, function_contents, chunk_opt)
 }
@@ -20,6 +20,6 @@ determined by the install status of the chosen package.}
 A character vector of properties formatted for writing to a file
 }
 \description{
-Title
+Construct Vertical Slides
 }
 \keyword{internal}

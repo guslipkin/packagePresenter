@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_title.R
 \name{.collate_title}
 \alias{.collate_title}
-\title{Title}
+\title{Collate Title}
 \usage{
 .collate_title(title_details, yaml)
 }
@@ -15,6 +15,6 @@
 A character vector of properties formatted for writing to a file
 }
 \description{
-Title
+Collate Title
 }
 \keyword{internal}

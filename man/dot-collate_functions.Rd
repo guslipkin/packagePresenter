@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_functions.R
 \name{.collate_functions}
 \alias{.collate_functions}
-\title{Title}
+\title{Collate Functions}
 \usage{
 .collate_functions(function_details, chunk_opt, standalone = FALSE)
 }
@@ -13,6 +13,6 @@
 A character vector of properties formatted for writing to a file
 }
 \description{
-Title
+Collate Functions
 }
 \keyword{internal}

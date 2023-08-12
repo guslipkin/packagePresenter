@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{.drop_null_from_list}
 \alias{.drop_null_from_list}
-\title{Title}
+\title{Drops Null Values From a List}
 \usage{
 .drop_null_from_list(l)
 }
@@ -13,6 +13,6 @@
 A list with null values removed
 }
 \description{
-Title
+Drops Null Values From a List
 }
 \keyword{internal}

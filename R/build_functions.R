@@ -1,4 +1,4 @@
-#' Title
+#' Get Functions
 #'
 #' @param functions A list of roxygen2 blocks for functions
 #' @param yaml A list of properties from `.parse_yaml()`
@@ -69,7 +69,7 @@
   return(function_details)
 }
 
-#' Title
+#' Collate Functions
 #'
 #' @param function_details A list of function details from `.get_function_tags`
 #'
@@ -149,7 +149,7 @@
   return(function_contents)
 }
 
-#' Title
+#' Construct Vertical Slides
 #'
 #' @param r The R source file for which a vertical is created
 #' @param r_files A vector of unique R source file names
@@ -178,7 +178,7 @@
   return(functions)
 }
 
-#' Title
+#' Process Function Parameters from roxygen2
 #'
 #' @param param A function parameter from an roxygen2 tag
 #'

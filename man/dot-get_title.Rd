@@ -2,9 +2,9 @@
 % Please edit documentation in R/build_title.R
 \name{.get_title}
 \alias{.get_title}
-\title{Title}
+\title{Get Title}
 \usage{
-.get_title(package)
+.get_title(package, credits)
 }
 \arguments{
 \item{package}{A file path to the root directory of an R package source
@@ -16,6 +16,6 @@ A list of roxygen2 properties for the package's DESCRIPTION file used
   to create the title slide
 }
 \description{
-Title
+Get Title
 }
 \keyword{internal}

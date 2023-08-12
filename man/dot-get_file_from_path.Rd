@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{.get_file_from_path}
 \alias{.get_file_from_path}
-\title{Title}
+\title{Get File From Path}
 \usage{
 .get_file_from_path(path)
 }
@@ -14,6 +14,6 @@ A length-one character vector with the last portion of the supplied
   path
 }
 \description{
-Title
+Get File From Path
 }
 \keyword{internal}

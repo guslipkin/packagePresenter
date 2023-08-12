@@ -1,4 +1,4 @@
-#' Title
+#' Get Dataset Information
 #'
 #' @param file A file path
 #' @param yaml A list of properties from `.parse_yaml()`
@@ -9,7 +9,7 @@
   lapply(datasets, .get_dataset_tags, yaml)
 }
 
-#' Title
+#' Get Dataset Tags
 #'
 #' @param block A roxygen2 block
 #' @param yaml A list of properties from `.parse_yaml()`
@@ -51,7 +51,7 @@
   return(dataset_details)
 }
 
-#' Title
+#' Collate Datasets
 #'
 #' @param dataset_details A list of function details from `.get_dataset_tags`
 #'
