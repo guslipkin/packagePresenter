@@ -17,6 +17,14 @@ create_yaml <- function(
     choose_functions = list(), choose_datasets = c()
 ) {
   # package <- .find_package(package)
+  cd <-
+    path |>
+    strsplit("/") |>
+    unlist() |>
+    utils::tail(1)
+  if (cd == "_pkgslides.yml" && file.exists(path)) {
+    return(path)
+  }
   file <- glue::glue("{path}/_pkgslides.yml")
   # stopifnot(!file.exists(file))
 
